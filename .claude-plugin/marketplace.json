@@ -1,0 +1,19 @@
+{
+  "name": "jobescape",
+  "owner": {
+    "name": "jobescape"
+  },
+  "plugins": [
+    {
+      "name": "jobescape-prd",
+      "source": ".",
+      "description": "PRD-authoring skills for jobescape PMs — orchestrator + 5 service-context skills.",
+      "version": "0.1.0",
+      "keywords": [
+        "prd",
+        "product-requirements",
+        "product-management"
+      ]
+    }
+  ]
+}
