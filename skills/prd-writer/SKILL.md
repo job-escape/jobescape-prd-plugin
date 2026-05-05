@@ -97,9 +97,25 @@ Checklist form. Each criterion should be independently verifiable. Cover happy p
 - [ ] ...
 
 ## 9. Open questions
-Unresolved decisions that need an owner. Not a dumping ground — if you can answer it with the info you have, answer it in the PRD instead.
+Unresolved **product** decisions that need a human owner before the PRD can be finalized. Strict scope: this section is for the PM and other product-side stakeholders (design, content, analytics, support), not for engineering.
 
-- **{Question}** — Owner: {name} — Needed by: {milestone}
+**Belongs here:**
+- Behavior under specific conditions ("does a skipped module count toward streaks?")
+- Scope decisions ("does v1 ship for free users or paid only?")
+- UX / design decisions that materially affect the user ("what does the empty state look like?")
+- Success criteria not yet decided ("which metric do we move?")
+- Cross-team coordination questions ("does this need a copy review with content lead?")
+
+**Does NOT belong here — even if uncertain:**
+- Engineering implementation choices: which service owns an endpoint, which file holds a flag, which library to use, where data is stored, what migrations are needed. Engineering decides these from the PRD. If there's a real **constraint** engineering must respect, write it in Section 7 (Technical notes), not here.
+- Naming conventions for events / fields / files — those follow the service skill's existing patterns. If the convention is unknown, write the requirement as a Technical Note constraint ("event names must match the service's existing convention; see service skill"), not as an open question for the PM.
+- Internal data flow / storage / API shape questions — same: Technical Notes if it's a constraint, otherwise omit.
+
+**Format:**
+
+- **{Question}** — Owner: {role or name, e.g. "PM", "design", "content lead"} — Needed by: {milestone, e.g. design freeze, kickoff, pre-launch}
+
+**Self-check before writing each open question:** "Would an engineer reading this PRD be the one to answer it?" If yes — it doesn't belong here. Move it to Technical Notes as a constraint, or omit (engineering will decide).
 
 ## 10. Rollout & risks
 - **Rollout plan:** (flag? % ramp? direct release?)
@@ -116,6 +132,7 @@ Before sending the draft, check:
 - **Technical notes come from the service skill**, not your prior assumptions.
 - **Acceptance criteria are verifiable.** "Works well" is not verifiable; "Fires `funnel_step_completed` with `step_id` property" is.
 - **Non-goals exist.** An empty Non-goals section almost always means the PM hasn't thought about scope — push back and ask.
+- **Open questions are product-only.** Read every entry in Section 9 and ask: "Would an engineer answer this from the PRD?" If yes, move it to Technical Notes (as a constraint) or delete it.
 
 ## Anti-patterns — never do these
 
@@ -123,4 +140,5 @@ Before sending the draft, check:
 - **Don't auto-invent analytics events.** New events must match the service's existing naming convention (see service skill) and have an owner.
 - **Don't bury cross-service work.** If this PRD requires a change in another service, say so in Technical Notes with the service name in bold.
 - **Don't write the engineering solution.** PRDs describe **what** and **why**; engineering chooses **how**. A few technical constraints are fine; an implementation plan is not.
+- **Don't dump engineering questions into Open Questions.** That section is for product/design/content/analytics decisions only — questions like "which backend service owns this endpoint" or "what naming convention for events" are engineering's call. If there's a hard constraint, write it in Technical Notes; otherwise omit.
 - **Don't skip the clarifying-questions step** just to look productive. A PRD built on guesses is more expensive than 5 minutes of questions.
