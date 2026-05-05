@@ -38,6 +38,8 @@ Ask **no more than 5 questions at a time**, grouped logically, numbered, each st
 
 Use this template exactly. Keep sections short — a PRD earns its length, it doesn't justify it.
 
+**On Owner fields:** the template uses `Owner` in Analytics events, Open questions, and Rollout dependencies. For each one, consult `team-roster.md` in this skill's directory and replace generic placeholders like `Owner: PM` or `Owner: design` with a specific person from the roster. If **multiple people fit a role** (e.g. multiple PMs, multiple frontend devs, multiple analysts), **don't pick silently** — keep the role-level placeholder during the draft, then ask the PM at the end as a single batched question (e.g. *"For ownership: PM is Арай, Ислам (PM), or Ельнур? Analytics is Сергей, Алёна, Мирлан, or Сабина?"*). If no one in the roster fits a role mentioned in the PRD, leave it as `Owner: {role} [TBD person]` and add an Open Questions entry asking who owns it.
+
 ```markdown
 # PRD: {Feature name}
 
