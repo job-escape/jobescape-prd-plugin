@@ -11,7 +11,7 @@
         "repo": "job-escape/jobescape-prd-plugin"
       },
       "description": "PRD-authoring skills for jobescape PMs — orchestrator + 5 service-context skills.",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "keywords": [
         "prd",
         "product-requirements",
