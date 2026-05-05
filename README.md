@@ -47,19 +47,25 @@ Each per-service skill reflects the state of its service at the time the skill w
 Structure:
 
 ```
-jobescape-prd-plugin/
+jobescape-prd-plugin/                  # marketplace root
 ├── .claude-plugin/
-│   ├── plugin.json
-│   └── marketplace.json
-├── skills/
-│   ├── prd-writer/SKILL.md
-│   ├── prd-funnel/SKILL.md
-│   ├── prd-editscape/SKILL.md
-│   ├── prd-jobescape-app/SKILL.md
-│   ├── prd-frontend-alpha/SKILL.md
-│   └── prd-funnel-constructor-editor/SKILL.md
+│   └── marketplace.json               # marketplace manifest, lists the plugin
+├── plugin/                            # plugin root (its own dir per Claude Code convention)
+│   ├── .claude-plugin/
+│   │   └── plugin.json                # plugin manifest
+│   └── skills/
+│       ├── prd-writer/
+│       │   ├── SKILL.md
+│       │   └── team-roster.md
+│       ├── prd-funnel/SKILL.md
+│       ├── prd-editscape/SKILL.md
+│       ├── prd-jobescape-app/SKILL.md
+│       ├── prd-frontend-alpha/SKILL.md
+│       └── prd-funnel-constructor-editor/SKILL.md
 └── README.md
 ```
+
+The marketplace lives at the repo root; the plugin lives in `./plugin/`. `marketplace.json` references it via `"source": "./plugin"`. This separation matches Claude Code's canonical layout — sharing `.claude-plugin/` between marketplace and plugin caused install errors in earlier versions.
 
 To test changes before publishing, install from your local checkout:
 
