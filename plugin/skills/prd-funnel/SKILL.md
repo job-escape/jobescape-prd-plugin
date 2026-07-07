@@ -9,6 +9,10 @@ description: Service context for writing a PRD targeting the `funnel` service �
 
 The user-facing conversion funnel: a sequence of quiz steps (gender, age, goals, skills, income, etc.) that routes a user to a personalized selling page and checkout. Heavily A/B-tested via GrowthBook. This is the **runtime** — it consumes config produced by `funnel-constructor-editor`.
 
+## How to use this context
+
+Everything in this file is background for **you**: vocabulary, feasibility signals, scope traps, and the analytics naming convention. None of it is content for the PRD body — the PRD contains no technical details (see `prd-writer`). When a note below says a change is bigger than it looks, that means: scope it and question the PM accordingly — don't write the technicalities into the PRD.
+
 ## Tech stack — what matters for PRDs
 
 - **Next.js 14** (App Router, SSR/dynamic rendering)
@@ -43,7 +47,7 @@ The user-facing conversion funnel: a sequence of quiz steps (gender, age, goals,
 - **Naming:** events prefixed `pr_funnel_*` (e.g. `pr_funnel_landing_page_view`, `pr_funnel_start`, `pr_funnel_selling_page_view`, `pr_funnel_error`)
 - **Dual pipeline:** PostHog also receives events with a different payload. A PRD that specifies an event **must say which pipeline is the source of truth** for its dashboards.
 
-When proposing new events: follow the `pr_funnel_{surface}_{action}` convention and pick an owner.
+When proposing new events: follow the `pr_funnel_{surface}_{action}` convention.
 
 ## Figma / design
 
@@ -53,17 +57,17 @@ No in-repo Figma references. The selling-page UI is fetched from an external ser
 
 ## Typical PRD concerns for this service
 
-1. **Version coordination.** A new step, a new layout, or a new pricing tier usually means new values across `funnel_version`, `quiz_version`, `selling_version`, and/or `chase_version`. PRD must list every flag that needs a variant.
-2. **Answer schema migration.** Quiz answers live in session cookies (`SESSION_ID_COOKIE_NAME`) + server user state. Adding/removing fields requires a migration plan for in-flight sessions.
+1. **Version coordination** *(background)*. A new step, a new layout, or a new pricing tier usually means engineering coordinates several version flags. For the PRD: keep the scope crisp about which parts of the flow change (new step? new selling layout? new discount?) — the flag work is engineering's.
+2. **Users mid-funnel.** Quiz answers persist across the session, so adding/removing a question affects users who are already partway through. For the PRD: ask the PM what those users should experience (see the new question, skip it, restart?) — that's a product decision. The migration mechanics are engineering's.
 3. **Pricing matrix.** Chase vs super_chase, trial prices, currencies — PRD must include the full matrix (or link to it), not just "show a discount."
 4. **Geo-locked behavior.** GrowthBook evaluates `country` and `domain`. A user changing networks (VPN) mid-funnel can be re-bucketed. PRDs with geo-gated features must say so explicitly.
 5. **Analytics source of truth.** For each new event, name the dashboard system (PostHog or BigQuery) that owns it.
-6. **Payment processor scope.** New payment features are not processor-agnostic — PRD must list which processors are in scope and which are explicitly deferred.
+6. **Payment scope.** Payment features don't automatically work for every payment method and geo. For the PRD: ask the PM which payment methods and geos are in scope for v1 and which are explicitly deferred — that's a product scope decision.
 
 ## Gotchas to flag in PRDs
 
 - **New quiz step = four artifacts minimum**: new route/page, form component, analytics events, GrowthBook variant config. Missing any one leaves the step broken for a cohort.
 - **Selling-page content is externally served** via `fce-lib`. "Change the copy on the selling page" is a PRD for the constructor, not this service.
-- **Trial/discount pricing is environment-specific.** PRDs touching pricing must call out staging test data; otherwise QA will be unable to verify.
+- **Trial/discount pricing differs between test and production environments** *(background)*. Feasibility note: pricing features are harder to verify before launch than they look; a timeline signal, not PRD content.
 - **Event schema is unversioned.** Renaming an event prop is a breaking change for existing dashboards — propose a new event rather than editing an old one.
-- **`funnel-constructor-editor` produces the configs this service renders.** If the change requires new block/component types in the selling page, the PRD has a cross-service dependency — call it out in Technical Notes.
+- **`funnel-constructor-editor` produces the configs this service renders.** If the change requires new block/component types in the selling page, the PRD has a cross-service dependency — say so in one plain-language sentence in the PRD Summary.

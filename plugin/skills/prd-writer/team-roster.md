@@ -1,14 +1,11 @@
 # Team roster
 
-Reference data for the `prd-writer` skill. When filling any **Owner** field in a PRD (Analytics events table, Open questions, Rollout dependencies), use this roster to map roles → specific people instead of leaving generic placeholders like `Owner: PM`.
+Reference data about the jobescape team. **Not wired into PRD drafting** — `prd-writer` fills Owner fields with roles, not names, and does not consult this file. Kept as a standalone reference (who's on the team, who fits which role) for when someone asks explicitly.
 
 ## Usage rules
 
-1. **Map role → person.** If a section calls for `Owner: PM`, replace it with a specific PM from the roster.
-2. **If multiple people fit a role, ask the PM at the end of the draft which one.** Don't pick silently. Batch the questions: "I need to assign owners — for the analytics events, is it Сергей or Алёна? For the design questions, Ақниет or Дидар?"
-3. **If no one in the roster fits**, keep the field role-level (`Owner: mobile analytics owner [TBD person]`) and add a corresponding entry to Open Questions asking who owns it.
-4. **Don't invent roles** that aren't in the roster.
-5. **Two people may share a first name** (e.g. two `Мирас`, two `Ислам`). Always disambiguate by the role suffix in parentheses, e.g. `Ислам (CPO)` vs `Ислам (PM)`.
+1. **Do not use this file during PRD drafting.** Owner fields in PRDs stay role-level (`Owner: PM`, `Owner: design`).
+2. **Two people may share a first name** (e.g. two `Мирас`, two `Ислам`). Always disambiguate by the role suffix in parentheses, e.g. `Ислам (CPO)` vs `Ислам (PM)`.
 
 ## Roster
 
@@ -93,7 +90,7 @@ Reference data for the `prd-writer` skill. When filling any **Owner** field in a
 
 ## Common role → likely owner shortcuts
 
-For typical PRD Owner fields, here are sensible defaults. **Still ask the PM if more than one fits.**
+Reference only — who typically fits a given role.
 
 | PRD Owner role | Roster candidates |
 |---|---|
