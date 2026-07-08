@@ -1,6 +1,6 @@
 {
   "name": "jobescape-prd",
-  "version": "0.4.1",
+  "version": "0.6.0",
   "description": "PRD-authoring skills for jobescape PMs: a `prd-writer` orchestrator plus per-service context skills for funnel, editscape, jobescape-app, frontend-alpha, and funnel-constructor-editor.",
   "author": {
     "name": "jobescape"

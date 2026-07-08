@@ -9,6 +9,10 @@ description: Service context for writing a PRD targeting the `editscape` service
 
 A WYSIWYG Markdown/MDX editor used to author lesson content with live preview. Built on `@mdxeditor/editor` (Lexical-based). Supports a fixed catalog of custom MDX components (Figure, Blockquote, Player, Chat, Prompt, Media, Downloads) and three viewport modes (Desktop / Tablet / Mobile).
 
+## How to use this context
+
+Everything in this file is background for **you**: vocabulary, feasibility signals, scope traps, and the analytics situation. None of it is content for the PRD body — the PRD contains no technical details (see `prd-writer`). When a note below says a change is bigger than it looks, that means: scope it and question the PM accordingly — don't write the technicalities into the PRD.
+
 ## Tech stack — what matters for PRDs
 
 - **Next.js 15** (App Router, but the editor component is SSR-disabled via dynamic import)
@@ -32,13 +36,11 @@ A WYSIWYG Markdown/MDX editor used to author lesson content with live preview. B
 - **`WidthType`** — layout enum on components: `"content"` (constrained), `"breakout"` (wider), `"bleed"` (full-bleed)
 - **Breakpoint** — which viewport is previewed (mobile/tablet/desktop); **transient**, not persisted across refresh
 - **MDX vs Markdown** — this editor emits MDX. "Pure markdown" isn't a distinct mode.
-- **Sanitization** — richtypo rules run live; PRDs changing text handling must say whether sanitization still applies
+- **Auto-formatting** — the editor auto-corrects typography as authors type (e.g. dashes, quotes). If the feature changes text handling, ask the PM whether auto-formatting should still apply — a product decision
 
 ## Analytics events — where and how
 
-**None exist today.** There is no `track()` wrapper, no analytics provider, no events fired.
-
-**PRD implication:** any PRD proposing a metric ("we'll measure editor adoption via...") must include a subsection proposing the analytics layer, not assume one. This likely means proposing alignment with the `funnel`/`jobescape-app`/`frontend-alpha` BigQuery pattern (`pr_editscape_*` event naming) — call out the decision, don't skip it.
+**None exist today, and PRDs for this service don't include analytics.** There is no tracking layer, and this is an internal tool — **omit the Analytics events section entirely** from editscape PRDs. Do not propose events, event names, or a tracking layer. If the PM states a success metric that would require tracking, don't design analytics for it — add an Open Question ("how do we measure this, given the editor has no tracking today?") and move on.
 
 ## Figma / design
 
@@ -48,16 +50,16 @@ No in-repo Figma references, no Code Connect, no design-token file. Styling is T
 
 ## Typical PRD concerns for this service
 
-1. **MDX parse performance & error UX.** Live preview re-parses on edit (200ms debounce). PRDs adding heavy components (large tables, many embeds) must address latency and the error-state UI when MDX fails to parse.
-2. **Custom-component extensibility.** Adding a new component means: editor descriptor (`components/init-mdx-editor.tsx`), export in `components/custom/index.ts`, preview mapping, and dialog UI. PRD must list all four.
-3. **Content size limits.** No current checks on markdown length or upload file size. If the feature implies bigger content, propose limits.
-4. **File upload dependency.** S3 uploads go through `NEXT_PUBLIC_ACADEMY_API_URL` → Academy API `/v2/s3/generate_upload_url/`. PRD touching media must confirm Academy API support.
+1. **Preview latency & error UX.** The live preview recomputes as the author types, and malformed content can fail to render. For the PRD: ask the PM what the author should see when content is heavy (slow preview) or broken (error state) — those are product decisions.
+2. **Custom-component extensibility** *(background)*. Adding a new component touches four separate places in the editor — it's a bigger change than "add one component" sounds. For the PRD: describe the component's authoring behavior and how it looks in preview; the four artifacts are engineering's.
+3. **Content size limits.** No limits exist today on document length or upload size. If the feature implies bigger content, ask the PM whether v1 should set limits and what the author sees when hitting them — product decisions.
+4. **File upload dependency** *(background)*. Media uploads depend on another jobescape service. A PRD touching media has a cross-service dependency — say so in one plain-language sentence in the Summary.
 5. **Viewport persistence.** The breakpoint resets on refresh today. If the feature assumes a "last used" viewport, PRD must call out the persistence change.
 
 ## Gotchas to flag in PRDs
 
 - **Blockquote has a custom keybinding.** Inside blockquotes, `Shift+Enter` inserts a soft line break; `Enter` exits the quote. This is documented in `BLOCKQUOTE_BEHAVIOR.md` and is intentional — do not propose to "normalize" it without weighing user expectations.
-- **No analytics baseline** — can't A/B test editor UX today. Any metric-driven PRD needs an analytics proposal up front.
+- **No analytics baseline** — can't A/B test or measure editor UX today. PRDs for this service skip the Analytics events section; if the PM wants a metric, it goes to Open Questions (see Analytics events above).
 - **Media vs Figure overlap.** `Figure` is image-only; `Media` infers type from the file (image/video/audio/PDF). PRDs adding a media-like feature must say which component is the target, or whether a new one is needed.
 - **Editor is SSR-disabled** via dynamic import. Server-rendered preview/share features need a separate rendering path.
-- **Missing `NEXT_PUBLIC_ACADEMY_API_URL` silently fails** — uploads return "Not uploaded" with no loud error. PRDs introducing new environments must include this env var in the rollout checklist.
+- **Missing `NEXT_PUBLIC_ACADEMY_API_URL` silently fails** — uploads return "Not uploaded" with no loud error. Background for you: features relying on uploads have this hidden failure mode; keep it in mind when assessing feasibility (not PRD content).
