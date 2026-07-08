@@ -33,10 +33,10 @@ Minimal example:
 What happens:
 1. `prd-writer` activates, identifies the target service (`funnel` in this example), and loads `prd-funnel` for domain context.
 2. If the brief is missing 3+ essential pieces (problem, outcome, entry point, scope hints, design direction, success measure), you'll get a small numbered list of clarifying questions.
-3. A full PRD draft is produced using the standard template: Summary, Problem, Goals & Non-goals, User flow, Design (Figma links incl. analytics-events map), Analytics events table, Acceptance criteria, Open questions.
+3. A full PRD draft is produced using the standard template: Summary, Problem, Goals & Non-goals (stable NG-IDs), Requirements (numbered atomic R-rows — the behavioral contract), Design (per-screen table), Analytics events table, Open questions (stable Q-IDs).
 4. Unknowns are marked inline as `**[TBD — {specific question}]**` rather than guessed. Product unknowns only — technical details (file paths, APIs, release mechanics) are excluded from the PRD entirely, and the assistant never asks the PM technical questions. Open Questions carries only what's still unanswered when the draft lands; answered questions become settled content in the relevant sections.
 
-The Design section is a per-screen table: each screen/flow step gets its own Figma **node** link (copy via "Copy link to selection"), with optional iOS / mobile web / desktop columns — screens that need no design are simply marked `—`. Have those node links (and the analytics-events Figma URL) handy when drafting.
+The Design section is a per-screen table: each screen/flow step gets a stable S-ID, its Figma **node** links (copy via "Copy link to selection") per platform (iOS / mobile web / desktop), and an explicit design status — designed (with which states), no design planned, or pending. Figma links are optional; the status column is not. Have those node links (and the analytics-events Figma URL) handy when drafting.
 
 ## Behavior verification (optional, recommended)
 

@@ -43,7 +43,7 @@ A PRD is only as good as the truth it captures. **If the PM didn't say it and th
 - A **desired-behavior decision** — what the product *should* do. This is the PM's call, always. For these, do exactly one of:
 
 1. **Ask.** Pause and ask one focused **product** question. Continue once answered. (See Step 3 — *Mid-draft questions are normal*.)
-2. **Mark TBD inline.** `**[TBD — {specific question to resolve}]**`. The TBD must be specific enough that the PM can answer it in one sentence.
+2. **Mark TBD inline.** `**[TBD — {specific question to resolve}]**`. The TBD must be specific enough that the PM can answer it in one sentence. If the unresolved point changes what gets built (behavior, scope, segment, gating — not just a missing link or name), also register it in Open Questions (Section 7) with a stable ID and reference it inline as `**[TBD → Q3]**`, so downstream readers can trace every blocking gap to one owned question.
 3. **State the constraint at the level you actually know.** "Courses are personalized" without inventing the algorithm.
 
 **Never** paper over uncertainty with confident-sounding prose. A PRD with 8 honest TBDs is far more valuable than one with 8 fabrications. And remember: if the unknown is a *technical* matter, none of the three apply — it simply doesn't belong in the PRD at all.
@@ -120,6 +120,8 @@ Handle results like this:
 
 Use the template below. Keep sections short — a PRD earns its length, it doesn't justify it.
 
+**Versioning:** start at `Draft v0.1` and bump the `Version` line on every material edit (scope change, resolved question, new/changed requirement — not typo fixes). Engineering diffs PRD versions to detect requirement drift mid-build, so an edited-but-unbumped PRD can cause stale work.
+
 ### Mid-draft questions are normal and expected
 
 Drafting is the second pass at gathering — Step 2 caught the obvious gaps; drafting surfaces the specifics. **When you reach a point where you'd otherwise invent something from the "may NOT invent" list, pause.** First check whether it's a current-behavior fact on a covered service — if so, probe `check_existing_behavior` (`graph` mode first; escalate unresolved probes to `quick`) instead of asking. For everything else, ask 1-3 focused questions. Wait. Continue once answered.
@@ -144,11 +146,13 @@ Bunch related questions; send 1-3; wait; continue. If the PM says *"just draft w
 
 ### Audience and language
 
-Write the whole PRD in **plain product language**:
+The PRD's primary consumers are **coding agents and requirement-extraction pipelines**; humans skim it. Sections 1–3 are the skimmable prose head; everything behavioral lives in numbered rows. Optimize for precision and extractability, not narrative — in **plain product language** throughout:
 
-- **Talk about user behavior and product outcomes**, not implementation. Write *"users see a list of recommended courses"* — never how that list is fetched or stored.
+- **Every behavioral statement must be user-observable and independently verifiable.** Describe what the user sees and does — that's what the PM actually knows and what blind verification can check. *"the Early Access row is not shown"* is good; *"the section does not exist in the DOM"* is bad — implementation vocabulary is fabrication bait, not precision.
+- **Talk about user behavior and product outcomes**, not implementation. Write *"users see a list of recommended courses"* — never how that list is fetched or stored. There is no technical section anywhere in the PRD (Core principle 1).
 - **Plain English for technical terms.** If a domain term is unavoidable, define it in parens on first use.
-- **No engineer-speak in acceptance criteria.** *"the section does not exist in the DOM"* is bad; *"the Early Access row is not shown"* is good.
+- **One commitment per sentence.** Extraction splits compound statements into separate rows anyway — pre-split them.
+- **Exact values, always.** Copy strings verbatim in quotes, numeric thresholds as numbers, each enum value named individually. "A reasonable limit" and "standard error copy" are unextractable.
 
 ### Owner fields
 
@@ -162,6 +166,7 @@ Where the template asks for an owner, use a **role**, not a person: `Owner: PM`,
 **Service:** {funnel | editscape | jobescape-app | frontend-alpha | funnel-constructor-editor}
 **Author:** {PM name}
 **Status:** Draft
+**Version:** Draft v0.1
 **Last updated:** {YYYY-MM-DD}
 
 ## 1. Summary
@@ -174,24 +179,36 @@ Who has the problem, what it looks like today, and evidence it's worth solving (
 **Goals** (2-4 bullets, outcomes not features):
 - ...
 
-**Non-goals** (explicitly out of scope — protects against scope creep):
-- ...
+**Non-goals** (explicitly out of scope — downstream, implementing a non-goal is a defect, so each gets a stable ID):
+- **NG-1:** ...
 
-## 4. User flow
-Step-by-step of the primary flow. Numbered, one sentence per step. Cover happy path only here; edge cases live in Acceptance criteria. Plain language — what the user sees and does.
+## 4. Requirements
+The contract. Numbered atomic rows grouped by sub-area — happy path groups first (in flow order), then states and edge cases. Each row is one sentence, one independently verifiable commitment, user-observable. IDs are stable: R-1, R-2, … in order of first appearance, **never renumbered**; withdrawn rows are struck through, not deleted.
 
-For every step that has (or needs) a design, reference its row in the Design table by screen name, e.g. *"3. User opens the discount screen (see Design: «Discount screen»)."* Steps with no visual change need no reference.
+### {Group: entry & navigation | core flow | states | edge cases | …}
+- **R-1:** When the user {trigger}, they see {observable outcome}.
+- **R-2:** Tapping {element} opens {destination}.
+- **R-3:** The list shows at most {N} items. *(every numeric limit is its own row)*
+- **R-4:** When {edge condition}, {behavior}. **[TBD → Q2]** *(unresolved rows carry a TBD marker, never a guess)*
+
+Row rules:
+- Exact copy in quotes: `**R-9:** The button label is "Continue learning".` Undecided copy is `**[TBD → Qn]**` — never placeholder prose that looks final.
+- Edge cases the PM decided are rows; edge cases nobody decided go to Open Questions. **Do not invent rows to look complete.**
+- Before writing each row, ask: *"Did the PM say this, or am I deciding it?"* If you're deciding — ask, or mark TBD.
 
 ## 5. Design
-Per-screen design links, not one link to a whole file. Each screen or flow step that needs design gets its own row, and each link points to the **specific Figma node** (a URL with `node-id`, copied via Figma's "Copy link to selection"), so the reader lands on the exact frame — not the top of a large file.
+Per-screen inventory, not one link to a whole file. Every screen or surface the feature touches gets a row with a stable ID (S-1, S-2, … — same stability rules as R-IDs) so requirement rows can reference it. Each link points to the **specific Figma node** (a URL with `node-id`, copied via Figma's "Copy link to selection"), so the reader lands on the exact frame. **Figma links are optional; design status per screen is not** — each row must say explicitly whether a design exists.
 
-| Screen / step | iOS | Mobile web | Desktop |
-|---|---|---|---|
-| {Screen name} | {node URL} | {node URL} | {node URL} |
+| ID | Screen / step | iOS | Mobile web | Desktop | Status |
+|---|---|---|---|---|---|
+| S-1 | {name} | {node URL} | {node URL} | — | designed (default, empty, error) |
+| S-2 | {name} | — | — | — | no design planned — reuse {existing pattern the PM named} |
+| S-3 | {name} | — | — | — | **[TBD → Qn]** design pending |
 
 - Fill only the platforms the feature ships on; leave the others as `—`.
-- Not every screen or step needs a design (e.g. copy-only changes, reused existing screens) — mark those rows `—` or omit them. Don't demand designs the feature doesn't need.
+- In Status, list which states are actually designed (default / empty / loading / error / hover). Undesigned states the PM specified belong in Section 4 as R-rows; undecided ones go to Open Questions.
 - Design exists but you don't have the node link: `**[TBD — node link pending from design]**`. **Do not invent URLs** and do not link the whole file as a substitute for a node link.
+- **Figma shows how things look, never how they behave.** Anything interactive — what a tap does, transitions, what happens on scroll, which elements are tappable — must be an R-row in Section 4. Behavior left implied by a mock reaches engineering as a blocking question or, worse, a guess.
 - **Figma (analytics events map):** {URL} — keep as a single link below the table, if one exists.
 
 ## 6. Analytics events
@@ -207,18 +224,7 @@ Table of events this feature must fire.
 
 If event names or properties haven't been confirmed, write the row content as `**[TBD — propose with PM]**` rather than guessing names.
 
-## 7. Acceptance criteria
-Checklist form. Each criterion must be (a) independently verifiable AND (b) something the PM specified or that's an obvious consequence of the brief — **not** a UX or behavior decision you invented.
-
-- [ ] User can {specific action} from {specific entry point}
-- [ ] {Specific event} fires when {specific trigger}
-- [ ] ...
-
-**Before writing each criterion**, ask yourself: *"Did the PM say this, or am I deciding it?"* If you're deciding it, ask the PM first. If the PM didn't decide and the brief doesn't decide, write `[TBD — {specific decision}]` and add it to Open Questions.
-
-Cover happy path + edge cases the PM mentioned. **Do not invent edge-case behavior** to fill quota. No engineer-speak — describe what the user sees.
-
-## 8. Open questions
+## 7. Open questions
 **Only questions that are still unanswered when the draft is delivered.** Anything the PM already answered — in the brief, in clarifying questions, or mid-draft — is settled content in the sections above and must NOT be restated here. If every question got answered, this section says "None." (or is omitted).
 
 Strict scope: unresolved **product** decisions for product-side stakeholders (PM, design, content, analytics, support).
@@ -235,24 +241,28 @@ Strict scope: unresolved **product** decisions for product-side stakeholders (PM
 
 **Format:**
 
-- **{Question}** — Owner: {role, e.g. "PM", "design", "content"} — Needed by: {milestone, e.g. design freeze, kickoff, pre-launch}
+- **Q1: {Question}** — Owner: {role, e.g. "PM", "design", "content"} — Needed by: {milestone, e.g. design freeze, kickoff, pre-launch}
+
+IDs are stable: number questions Q1, Q2, … in order of first appearance and **never renumber or reuse an ID**. A question answered *during drafting* becomes settled content and its ID is retired — it doesn't appear here. A question resolved *after the PRD was delivered* is struck through with its answer (`~~Q2: …~~ Resolved: {one-line answer}`) in the next version rather than deleted, so nothing referencing the ID dangles. Inline `**[TBD → Qn]**` markers elsewhere in the PRD must point at a live entry here. (Engineering workflows key off these IDs.)
 
 **Self-check before writing each open question:** "Is this still open, and would a product-side person be the one to answer it?" If it's already answered or an engineer would answer it — it doesn't belong here.
 ```
 
 ## Step 4 — Review before returning to the PM
 
-Before sending the draft, run all four audits:
+Before sending the draft, run all five audits:
 
 1. **Anti-fabrication audit.** Read every line. For each statement of fact (a behavior, sort order, event name, empty state, edge case, copy string), ask: *"Did the PM say this, did a behavior-tool check confirm it, or did I make it up?"* If made up — replace with TBD or delete. A current-behavior claim counts as confirmed only if you actually ran the probe this session; proxy findings (web app standing in for mobile) count only if the PM confirmed parity. **This is the most important check.**
 
-   On a covered service, before final handoff, **re-verify the load-bearing current-behavior claims** — the ones an acceptance criterion or a "must not break" constraint depends on — with `check_existing_behavior` in `deep` mode (higher rigor than the `graph`/`quick` probes used while drafting). Reserve `deep` for these few handoff checks, not routine drafting probes.
+   On a covered service, before final handoff, **re-verify the load-bearing current-behavior claims** — the ones a requirement row or a "must not break" constraint depends on — with `check_existing_behavior` in `deep` mode (higher rigor than the `graph`/`quick` probes used while drafting). Reserve `deep` for these few handoff checks, not routine drafting probes.
 
 2. **Technical-content audit.** Read every line. Look for: file paths, framework/library names, API/service/table references, release mechanics (flags, OTA, rollout %), schema talk, low-level jargon. **Delete it** — there is nowhere in the PRD for it to move to. If deleting it loses a genuine cross-service dependency, restate that dependency as one plain-language sentence in the Summary.
 
-3. **Acceptance criteria audit.** Each criterion should be a constraint the PM set, not a decision you made. If you'd be embarrassed for the PM to ask *"wait, who decided this?"* — it shouldn't be in the criteria.
+3. **Requirements audit.** Each R-row is atomic (one commitment), user-observable, and a constraint the PM actually set — not a decision you made. If you'd be embarrassed for the PM to ask *"wait, who decided this?"* — it shouldn't be a row. Split compound rows; make vague rows ("handles errors gracefully", "works well") exact or demote them to a TBD.
 
 4. **Open questions audit.** Read every entry. Two kill conditions: *"Was this already answered?"* → remove it (the answer lives in the sections above). *"Would an engineer be the one to answer this?"* → delete it entirely.
+
+5. **Traceability audit.** Every blocking `**[TBD → Qn]**` marker points at a live Open Questions entry with an owner; every Open Questions entry has a stable `Qn` ID; R-/NG-/S-IDs are sequential, unique, and never reused; every screen row in Section 5 has an explicit status (designed / no design planned / TBD → Qn); the `Version` line reflects this draft. Downstream engineering workflows extract requirements row-by-row from the PRD and anchor unresolved points to these IDs — a blocking gap without an owned question becomes a guess on the engineering side.
 
 Plus the standing checks:
 
