@@ -61,7 +61,7 @@ New events: follow `pr_webapp_{surface}_{action}` and wire through an Effector `
 
 No Code Connect. One comment in `CertificateItem.tsx` references Figma asset URLs (`// Figma asset URLs`). No systematic link.
 
-**PM hook:** PRD Design section should include Figma file URL + component/frame links. If the feature touches shared Academy UI, also reference the existing Radix primitives in use (accordion, dialog, etc.) so engineering knows whether new primitives are needed.
+**PM hook:** Figma links are **optional** — a screen row with status "design pending" or "no design planned" is valid; engineering proceeds with design verification explicitly waived for that screen. But when designs exist, link them at the **frame level** per screen row (the URL from right-click → "Copy link to selection"), not just the file: this service's engineering workflow extracts per-screen ground truth (states, copy, spacing) directly from linked frames, and a file-level link forces engineers to hunt for the right frames. If states are designed (empty/loading/error), link those frames too. If the feature touches shared Academy UI, also reference the existing Radix primitives in use (accordion, dialog, etc.) so engineering knows whether new primitives are needed.
 
 ## Typical PRD concerns for this service
 

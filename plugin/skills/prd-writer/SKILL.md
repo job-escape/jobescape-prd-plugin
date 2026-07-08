@@ -27,7 +27,7 @@ A PRD is only as good as the truth it captures. **If the PM didn't say it, the b
 **When you'd otherwise invent one of those, do exactly one of these instead:**
 
 1. **Ask.** Pause and ask one focused question. Continue once answered. (See Step 3 — *Mid-draft questions are normal*.)
-2. **Mark TBD inline.** `**[TBD — {specific question to resolve}]**`. The TBD must be specific enough that the PM can answer it in one sentence.
+2. **Mark TBD inline.** `**[TBD — {specific question to resolve}]**`. The TBD must be specific enough that the PM can answer it in one sentence. If the unresolved point changes what gets built (behavior, scope, segment, gating — not just a missing link or name), also register it in Open Questions (Section 8) with a stable ID and reference it inline as `**[TBD → Q3]**`, so downstream readers can trace every blocking gap to one owned question.
 3. **State the constraint at the level you actually know.** "Courses are personalized" without inventing the algorithm. "Network errors are handled" without inventing the retry policy.
 
 **Never** paper over uncertainty with confident-sounding prose. A PRD with 8 honest TBDs is far more valuable than one with 8 fabrications.
@@ -74,6 +74,8 @@ The pattern to avoid: PM answers 1 of 5 questions → you say "Great, drafting n
 
 Use the template below. Keep sections short — a PRD earns its length, it doesn't justify it.
 
+**Versioning:** start at `Draft v0.1` and bump the `Version` line on every material edit (scope change, resolved question, new/changed requirement — not typo fixes). Engineering diffs PRD versions to detect requirement drift mid-build, so an edited-but-unbumped PRD can cause stale work.
+
 ### Mid-draft questions are normal and expected
 
 Drafting is the second pass at gathering — Step 2 caught the obvious gaps; drafting surfaces the specifics. **When you reach a point where you'd otherwise invent something from the "may NOT invent" list (Core principle), pause.** Ask 1-3 focused questions. Wait. Continue once answered.
@@ -91,12 +93,12 @@ Bunch related questions; send 1-3; wait; continue. If the PM says *"just draft w
 
 ### Audience and language
 
-The PRD is read by PMs, designers, content people, and (later) engineering. Write the body (sections 1-6, 8-10) in **plain product language**. Specifically:
+The PRD's primary consumers are **coding agents and requirement-extraction pipelines**; humans skim it. Sections 1–3 are the skimmable prose head; everything behavioral lives in numbered rows. Optimize for precision and extractability, not narrative. Specifically:
 
-- **Don't reference internal file paths, store names, hook names, or framework concepts** in the PRD body. Those go ONLY in Section 7 (Technical Notes), and only when they're actual known constraints.
-- **Talk about user behavior and product outcomes**, not implementation. Write *"users see a list of recommended courses"* — not *"recommended courses fetch from `aggregatorApi` and live in an Effector store at `/features/skills/model/store.ts`"*.
-- **Plain English for technical terms.** If you must use one, define it in parens on first use.
-- **No engineer-speak in acceptance criteria.** *"the section does not exist in the DOM"* is bad; *"the Early Access row is not shown"* is good.
+- **Every behavioral statement must be user-observable and independently verifiable.** Describe what the user sees and does — that's what the PM actually knows and what blind verification can check. *"the Early Access row is not shown"* is good; *"the section does not exist in the DOM"* is bad — implementation vocabulary is fabrication bait, not precision.
+- **Don't reference internal file paths, store names, hook names, or framework concepts** in the PRD body. Those go ONLY in Section 7 (Technical Notes), and only when they're actual known constraints. The PRD states *what* and *why*; agents decide *how* from the codebase.
+- **One commitment per sentence.** Extraction splits compound statements into separate rows anyway — pre-split them.
+- **Exact values, always.** Copy strings verbatim in quotes, numeric thresholds as numbers, each enum value named individually. "A reasonable limit" and "standard error copy" are unextractable.
 
 ### On Owner fields
 
@@ -110,6 +112,7 @@ The template uses `Owner` in Analytics events, Open questions, and Rollout depen
 **Service:** {funnel | editscape | jobescape-app | frontend-alpha | funnel-constructor-editor}
 **Author:** {PM name}
 **Status:** Draft
+**Version:** Draft v0.1
 **Last updated:** {YYYY-MM-DD}
 
 ## 1. Summary
@@ -122,18 +125,37 @@ Who has the problem, what it looks like today, and evidence it's worth solving (
 **Goals** (2-4 bullets, outcomes not features):
 - ...
 
-**Non-goals** (explicitly out of scope — protects against scope creep):
-- ...
+**Non-goals** (explicitly out of scope — downstream, implementing a non-goal is a defect, so each gets a stable ID):
+- **NG-1:** ...
 
-## 4. User flow
-Step-by-step of the primary flow. Numbered, one sentence per step. Cover happy path only here; edge cases live in Acceptance criteria. Plain language — what the user sees and does.
+## 4. Requirements
+The contract. Numbered atomic rows grouped by sub-area — happy path groups first (in flow order), then states and edge cases. Each row is one sentence, one independently verifiable commitment, user-observable. IDs are stable: R-1, R-2, … in order of first appearance, **never renumbered**; withdrawn rows are struck through, not deleted.
+
+### {Group: entry & navigation | core flow | states | edge cases | …}
+- **R-1:** When the user {trigger}, they see {observable outcome}.
+- **R-2:** Tapping {element} opens {destination}.
+- **R-3:** The list shows at most {N} items. *(every numeric limit is its own row)*
+- **R-4:** When {edge condition}, {behavior}. **[TBD → Q2]** *(unresolved rows carry a TBD marker, never a guess)*
+
+Row rules:
+- Exact copy in quotes: `**R-9:** The button label is "Continue learning".` Undecided copy is `**[TBD → Qn]**` — never placeholder prose that looks final.
+- Edge cases the PM decided are rows; edge cases nobody decided go to Open Questions. **Do not invent rows to look complete.**
+- Before writing each row, ask: *"Did the PM say this, or am I deciding it?"* If you're deciding — ask, or mark TBD.
 
 ## 5. Design
-- **Figma (screens):** {URL}
-- **Figma (analytics events map):** {URL}
-- **Design system references:** {component names or tokens in use, if relevant}
+Per-screen inventory. Every screen or surface the feature touches gets a row with a stable ID (S-1, S-2, … — same stability rules as R-IDs) so requirements can reference it. **Figma links are optional; design status per screen is not** — each row must say explicitly whether a design exists.
 
-If no Figma yet: `**[TBD — design link pending]**`. Do not invent URLs.
+| ID | Screen / surface | Figma frame | States designed | Status |
+|---|---|---|---|---|
+| S-1 | {name} | {frame URL} | default, empty, error | designed |
+| S-2 | {name} | — | — | no design planned — reuse {existing pattern the PM named} |
+| S-3 | {name} | — | — | **[TBD → Qn]** design pending |
+
+- Link **frames** (right-click → "Copy link to selection"), not the whole file — downstream extraction works frame by frame. Do not invent URLs.
+- List which states are actually designed (default / empty / loading / error / hover); undesigned states the PM specified belong in Section 4 as R-rows, undecided ones in Open Questions.
+- **Figma shows how things look, never how they behave.** Anything interactive — what a tap does, transitions, what happens on scroll, which elements are tappable — must be an R-row in Section 4. Behavior left implied by a mock reaches engineering as a blocking question or, worse, a guess.
+- **Figma (analytics events map):** {URL, if one exists}
+- **Design system references:** {component names or tokens in use, if relevant}
 
 ## 6. Analytics events
 Table of events this feature must fire.
@@ -167,18 +189,7 @@ Do NOT write:
 
 If a section would be empty, leave it empty. Empty bullets are noise.
 
-## 8. Acceptance criteria
-Checklist form. Each criterion must be (a) independently verifiable AND (b) something the PM specified or that's an obvious consequence of the brief — **not** a UX or behavior decision you invented.
-
-- [ ] User can {specific action} from {specific entry point}
-- [ ] {Specific event} fires with {specific properties} when {specific trigger}
-- [ ] ...
-
-**Before writing each criterion**, ask yourself: *"Did the PM say this, or am I deciding it?"* If you're deciding it, ask the PM first. If the PM didn't decide and the brief doesn't decide, write `[TBD — {specific decision}]` and add it to Open Questions.
-
-Cover happy path + edge cases the PM mentioned. **Do not invent edge-case behavior** to fill quota. No engineer-speak ("DOM", "render", "state machine") — describe what the user sees.
-
-## 9. Open questions
+## 8. Open questions
 Unresolved **product** decisions that need a human owner before the PRD can be finalized. Strict scope: this section is for the PM and other product-side stakeholders (design, content, analytics, support), not for engineering.
 
 **Belongs here:**
@@ -195,11 +206,13 @@ Unresolved **product** decisions that need a human owner before the PRD can be f
 
 **Format:**
 
-- **{Question}** — Owner: {role or name, e.g. "PM", "design", "content lead"} — Needed by: {milestone, e.g. design freeze, kickoff, pre-launch}
+- **Q1: {Question}** — Owner: {role or name, e.g. "PM", "design", "content lead"} — Needed by: {milestone, e.g. design freeze, kickoff, pre-launch}
+
+IDs are stable: number questions Q1, Q2, … in order of first appearance and **never renumber** — when a question is resolved, fold the answer into the relevant section and mark the entry `~~Q2: …~~ Resolved: {one-line answer}` instead of deleting it. Inline `**[TBD → Qn]**` markers elsewhere in the PRD must point at a live entry here. (Engineering workflows key off these IDs, so a renumbered or vanished question silently breaks their tracking.)
 
 **Self-check before writing each open question:** "Would an engineer reading this PRD be the one to answer it?" If yes — it doesn't belong here.
 
-## 10. Rollout & risks
+## 9. Rollout & risks
 - **Rollout plan:** (flag? % ramp? direct release?) — only state what the PM said; don't invent a flag name or rollout percentage.
 - **Risks:** (what could go wrong and how we'd detect it)
 - **Dependencies:** (other teams, services, or work that must land first)
@@ -207,15 +220,17 @@ Unresolved **product** decisions that need a human owner before the PRD can be f
 
 ## Step 4 — Review before returning to the PM
 
-Before sending the draft, run all four audits:
+Before sending the draft, run all five audits:
 
 1. **Anti-fabrication audit.** Read every line. For each statement of fact (a behavior, sort order, file path, event name, empty state, edge case, copy string), ask: *"Did the PM say this, did the service skill say this, or did I make it up?"* If made up — replace with TBD or delete. **This is the most important check.**
 
-2. **Engineering-speak audit.** Read every line of the PRD body (sections 1-6, 8-10). Look for: file paths (`/features/...`), framework names (Effector, DOM, Expo, App Router, tRPC, Hocuspocus, etc.), function/store/hook names, low-level jargon. Either move to Section 7 if it's a real constraint, or delete. The body should read in plain product language.
+2. **Engineering-speak audit.** Read every line of the PRD body (sections 1-6, 8-9). Look for: file paths (`/features/...`), framework names (Effector, DOM, Expo, App Router, tRPC, Hocuspocus, etc.), function/store/hook names, low-level jargon. Either move to Section 7 if it's a real constraint, or delete. Requirements describe user-observable behavior; implementation vocabulary is where fabrication hides.
 
-3. **Acceptance criteria audit.** Each criterion should be a constraint, not a decision you made. If you'd be embarrassed for the PM to ask *"wait, who decided this?"* — it shouldn't be in the criteria.
+3. **Requirements audit.** Each R-row is atomic (one commitment), user-observable, and a constraint the PM actually set — not a decision you made. If you'd be embarrassed for the PM to ask *"wait, who decided this?"* — it shouldn't be a row. Split compound rows; make vague rows ("handles errors gracefully", "works well") exact or demote them to a TBD.
 
-4. **Open questions audit.** Read every entry in Section 9. *"Would an engineer answer this from the PRD?"* If yes, move to Technical Notes (as a constraint) or delete it.
+4. **Open questions audit.** Read every entry in Section 8. *"Would an engineer answer this from the PRD?"* If yes, move to Technical Notes (as a constraint) or delete it.
+
+5. **Traceability audit.** Every blocking `**[TBD → Qn]**` marker points at a live Open Questions entry with an owner; every Open Questions entry has a stable `Qn` ID; R-/NG-/S-IDs are sequential, unique, and never reused; every screen row in Section 5 has an explicit status (designed / no design planned / TBD → Qn); the `Version` line reflects this draft. Downstream engineering workflows extract requirements row-by-row from the PRD and anchor unresolved points to these Q-IDs — a blocking gap without an owned question becomes a guess on the engineering side.
 
 Plus the standing checks:
 
@@ -228,7 +243,7 @@ Plus the standing checks:
 
 - **Don't invent specifics.** Single biggest failure mode. Specific behaviors, UX choices, file paths, event names, edge-case handling, empty-state copy — if the PM didn't say it and the service skill doesn't document it: ask, mark TBD, or omit. Confident-sounding fabrication is worse than honest uncertainty. (See Core principle.)
 - **Don't proceed when questions went unanswered.** If you asked 5 clarifying questions and got 1 answer, re-ask the other 4. Don't silently assume.
-- **Don't write engineering-speak in the PRD body.** PMs, designers, and content people read this. File paths, framework jargon, store/hook names — those go in Section 7 (Technical Notes) only when they're real constraints.
+- **Don't write engineering-speak in the PRD body.** Requirements describe user-observable behavior — that's what the PM can vouch for and what verification can check. File paths, framework jargon, store/hook names — those go in Section 7 (Technical Notes) only when they're real constraints.
 - **Don't pad.** A 3-page PRD that says something beats an 8-page PRD that says nothing.
 - **Don't auto-invent analytics events.** Naming conventions come from the service skill; the actual events to fire are a PM decision — ask.
 - **Don't bury cross-service work.** If this PRD requires a change in another service, say so in Technical Notes with the service name in bold.

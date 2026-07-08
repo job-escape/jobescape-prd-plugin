@@ -33,7 +33,7 @@ Minimal example:
 What happens:
 1. `prd-writer` activates, identifies the target service (`funnel` in this example), and loads `prd-funnel` for domain context.
 2. If the brief is missing 3+ essential pieces (problem, outcome, entry point, scope hints, design direction, success measure), you'll get a small numbered list of clarifying questions.
-3. A full PRD draft is produced using the standard template: Summary, Problem, Goals & Non-goals, User flow, Design (Figma links incl. analytics-events map), Analytics events table, Technical notes, Acceptance criteria, Open questions, Rollout & risks.
+3. A full PRD draft is produced using the standard template: Summary, Problem, Goals & Non-goals (stable NG-IDs), Requirements (numbered atomic R-rows — the behavioral contract), Design (Figma links incl. analytics-events map), Analytics events table, Technical notes, Open questions (stable Q-IDs), Rollout & risks.
 4. Unknowns are marked inline as `**[TBD — {specific question}]**` rather than guessed.
 
 Attach Figma URLs and the analytics-events Figma URL in your brief when you have them — the template has dedicated slots.
