@@ -9,6 +9,10 @@ description: Service context for writing a PRD targeting the `funnel-constructor
 
 A visual editor for constructing multi-step conversion funnels: quiz pages, onboarding steps, upsell/selling pages, and the conditional branching between them. Produces configs (MDX + JSON in S3 + Prisma) that the `funnel` service consumes at runtime. Real-time collaborative editing via Lexical + Yjs over WebSocket.
 
+## How to use this context
+
+Everything in this file is background for **you**: vocabulary, feasibility signals, scope traps, and the analytics situation. None of it is content for the PRD body — the PRD contains no technical details (see `prd-writer`). When a note below says a change is bigger than it looks, that means: scope it and question the PM accordingly — don't write the technicalities into the PRD.
+
 ## Tech stack — what matters for PRDs
 
 - **Next.js 15** (App Router, TypeScript)
@@ -41,9 +45,9 @@ A visual editor for constructing multi-step conversion funnels: quiz pages, onbo
 
 ## Analytics events — where and how
 
-**None exist in this editor today.** No tracking layer.
+**None exist in this editor today, and PRDs for this service don't include analytics.** There is no tracking layer, and this is an internal tool — **omit the Analytics events section entirely** from funnel-constructor-editor PRDs. Do not propose events, event names, or a tracking layer. If the PM states a success metric that would require tracking (e.g. "measure editor usage"), don't design analytics for it — add an Open Question ("how do we measure this, given the editor has no tracking today?") and move on.
 
-**PRD implication:** any PRD claiming a "measure editor usage" or "track PM behavior" goal must propose the analytics approach — don't assume one. The `jobescape-app` / `frontend-alpha` BigQuery pattern is the likely reference; name convention `pr_fce_*` fits the existing family.
+Note: analytics for the funnels *built with* this editor lives in the `funnel` runtime — a PRD about measuring end-user behavior targets `funnel`, not this service.
 
 ## Figma / design
 
@@ -53,20 +57,16 @@ No Figma integration, no design-token file. UI built directly with Radix + Tailw
 
 ## Typical PRD concerns for this service
 
-1. **Schema compatibility with `funnel`.** This editor produces configs; the `funnel` runtime consumes them. **Any change to page/block/rule shape is a cross-service change.** PRD must spell out:
-   - What schema fields change
-   - Backward-compat story for existing live funnels
-   - Required version bump in `@job-escape/fce-lib`
-   - Migration plan for S3 MDX files already on disk
-2. **Real-time collaboration invariants.** Lexical + Yjs + Hocuspocus. Features that change the document model must work under concurrent edits — PRD should state whether the feature is CRDT-safe or requires a lock.
-3. **Rule-engine validation.** Conditional branching via `json-rules-engine`. New rule types or operators need validation so a saved funnel can't break the runtime.
-4. **Versioning & undo/redo.** Quiz versions live as S3 folders. Lexical history is imported but unclear whether undo/redo is fully wired — confirm if the PRD relies on it.
-5. **Component-registry coordination.** Adding a new block type means updating `@job-escape/fce-lib`, this editor, AND the `funnel` runtime. Three artifacts, one release.
+1. **Compatibility with the live funnel** *(background)*. This editor produces what the `funnel` runtime shows to real users — changing what funnels can contain is always a cross-service change. For the PRD: note the funnel-runtime dependency in one plain-language sentence in the Summary, and ask the PM the product question hiding here: **what happens to funnels that are already live** — do they keep working unchanged, get the new behavior, or need rebuilding? Schema/versioning/migration mechanics are engineering's.
+2. **Concurrent editing.** Multiple PMs can edit the same funnel at the same time. For any feature that changes what's being edited, ask the PM the product question: what should a second editor see when someone else is changing the same thing? Don't leave simultaneous-edit behavior undefined.
+3. **Branching logic safety** *(background)*. New kinds of branching conditions can produce funnels that break for users if saved wrong. Feasibility signal — validation is engineering's job; the PRD just defines what the branching should do.
+4. **Undo/redo** *(background)*. It's unclear whether undo/redo fully works today — confirm before drafting a PRD that relies on it.
+5. **New block types are triple work** *(background)*. A new block type touches this editor, a shared library, and the funnel runtime — one release, three moving parts. Scope/timeline signal only.
 
 ## Gotchas to flag in PRDs
 
-- **`@job-escape/fce-lib` is the coupling point** between this editor and the `funnel` runtime. PRDs touching the component catalog are inherently cross-service, and the lib's version bump should appear in the Rollout section.
+- **`@job-escape/fce-lib` is the coupling point** between this editor and the `funnel` runtime. PRDs touching the component catalog are inherently cross-service — note the dependency on the funnel runtime in plain language in the PRD Summary (the version-bump mechanics are engineering's concern, not PRD content).
 - **The `funnel` service is the consumer, not this editor.** A PRD that says "change what users see in the quiz" targets `funnel`; a PRD that says "change how PMs build quizzes" targets this service. Getting this wrong splits the work incorrectly.
 - **S3 MDX files are the source of truth for page content** — not Postgres. Migrations must handle both.
-- **Collaboration server is a rendered free-tier URL** (`onrender.com`). PRDs raising concurrency or reliability should flag that hosting arrangement as a risk.
-- **No analytics** means no way to ship a PM-adoption metric today. Propose the analytics layer in the same PRD or split it out.
+- **Collaboration infrastructure is fragile** *(background)*. The real-time editing backend runs on a free-tier hosting plan. If the PRD's feature depends on many simultaneous editors, treat feasibility with skepticism and check with engineering before promising it.
+- **No analytics** means no way to measure a PM-adoption metric today. PRDs for this service skip the Analytics events section; if the PM wants a metric, it goes to Open Questions (see Analytics events above).

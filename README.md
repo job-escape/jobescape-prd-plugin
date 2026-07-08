@@ -33,10 +33,20 @@ Minimal example:
 What happens:
 1. `prd-writer` activates, identifies the target service (`funnel` in this example), and loads `prd-funnel` for domain context.
 2. If the brief is missing 3+ essential pieces (problem, outcome, entry point, scope hints, design direction, success measure), you'll get a small numbered list of clarifying questions.
-3. A full PRD draft is produced using the standard template: Summary, Problem, Goals & Non-goals (stable NG-IDs), Requirements (numbered atomic R-rows — the behavioral contract), Design (Figma links incl. analytics-events map), Analytics events table, Technical notes, Open questions (stable Q-IDs), Rollout & risks.
-4. Unknowns are marked inline as `**[TBD — {specific question}]**` rather than guessed.
+3. A full PRD draft is produced using the standard template: Summary, Problem, Goals & Non-goals (stable NG-IDs), Requirements (numbered atomic R-rows — the behavioral contract), Design (per-screen table), Analytics events table, Open questions (stable Q-IDs).
+4. Unknowns are marked inline as `**[TBD — {specific question}]**` rather than guessed. Product unknowns only — technical details (file paths, APIs, release mechanics) are excluded from the PRD entirely, and the assistant never asks the PM technical questions. Open Questions carries only what's still unanswered when the draft lands; answered questions become settled content in the relevant sections.
 
-Attach Figma URLs and the analytics-events Figma URL in your brief when you have them — the template has dedicated slots.
+The Design section is a per-screen table: each screen/flow step gets a stable S-ID, its Figma **node** links (copy via "Copy link to selection") per platform (iOS / mobile web / desktop), and an explicit design status — designed (with which states), no design planned, or pending. Figma links are optional; the status column is not. Have those node links (and the analytics-events Figma URL) handy when drafting.
+
+## Behavior verification (optional, recommended)
+
+The skills integrate with the **Behavior Codebase MCP** — a hosted service that answers "what does the product do today?" against a read-only codebase checkout. When its tools (`check_prd_collisions`, `check_existing_behavior`, `list_behavior_repos`) are connected to the session:
+
+- After the brief, the assistant **automatically checks the idea for collisions** with existing behavior and turns any hits into product questions or Open Questions.
+- During drafting, current-behavior facts are checked against the codebase instead of being asked of the PM or marked TBD — the PM only answers *what should change*.
+- Coverage today: `frontend-alpha` (direct), `jobescape-app` (via `frontend-alpha` as a proxy — findings are always confirmed with the PM for mobile parity). Other services fall back to the normal ask/TBD protocol.
+
+The MCP server is installed separately by the plugin maintainer — it is not bundled with this plugin. Without it, everything works as before; the behavior checks simply don't happen.
 
 ## Maintenance
 
@@ -56,7 +66,7 @@ jobescape-prd-plugin/                  # marketplace root
 │   └── skills/
 │       ├── prd-writer/
 │       │   ├── SKILL.md
-│       │   └── team-roster.md
+│       │   └── team-roster.md         # standalone reference; not used during drafting
 │       ├── prd-funnel/SKILL.md
 │       ├── prd-editscape/SKILL.md
 │       ├── prd-jobescape-app/SKILL.md

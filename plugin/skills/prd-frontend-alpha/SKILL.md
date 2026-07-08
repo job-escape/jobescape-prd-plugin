@@ -11,6 +11,10 @@ The jobescape web app: Academy (courses, lessons, projects, certificates), AI to
 
 **Note on the name:** "Alpha" is architectural (the App Router rewrite), not a separate product — there is no parallel "stable" frontend in production.
 
+## How to use this context
+
+Everything in this file is background for **you**: vocabulary, feasibility signals, scope traps, and the analytics naming convention. None of it is content for the PRD body — the PRD contains no technical details (see `prd-writer`). When a note below says a change is bigger than it looks, that means: scope it and question the PM accordingly — don't write the technicalities into the PRD.
+
 ## Tech stack — what matters for PRDs
 
 - **Next.js 16** (App Router, Server Components)
@@ -55,7 +59,7 @@ Non-auth: `/auth/login`, `/auth/register`, certificate validation (MDX-rendered)
 - **Naming:** events prefixed `pr_webapp_*` (e.g. `pr_webapp_lesson_practice_start_view`, `pr_webapp_login_*`, `pr_webapp_subscription_view`)
 - **Other pipelines:** Hotjar (session recordings), Amplitude (`analytics.track()`), Intercom, GTM — each with its own role
 
-New events: follow `pr_webapp_{surface}_{action}` and wire through an Effector `sample()` chain rather than firing ad-hoc from a component.
+New events: follow the `pr_webapp_{surface}_{action}` convention — names, triggers, and properties confirmed with the PM, never invented.
 
 ## Figma / design
 
@@ -63,18 +67,23 @@ No Code Connect. One comment in `CertificateItem.tsx` references Figma asset URL
 
 **PM hook:** Figma links are **optional** — a screen row with status "design pending" or "no design planned" is valid; engineering proceeds with design verification explicitly waived for that screen. But when designs exist, link them at the **frame level** per screen row (the URL from right-click → "Copy link to selection"), not just the file: this service's engineering workflow extracts per-screen ground truth (states, copy, spacing) directly from linked frames, and a file-level link forces engineers to hunt for the right frames. If states are designed (empty/loading/error), link those frames too. If the feature touches shared Academy UI, also reference the existing Radix primitives in use (accordion, dialog, etc.) so engineering knows whether new primitives are needed.
 
+## Behavior verification — covered service
+
+This service **is covered** by the Behavior Codebase MCP (see `prd-writer` → *Checking current behavior*). When those tools are connected:
+
+- **Repo id:** `frontend-alpha`. Backend behavior (academy, ai, users) surfaces automatically through cross-repo links — don't try to query backends directly.
+- **`touchedSurfaces` vocabulary:** use the routes from *User-visible surface* above (`/academy`, `/personal-plan`, `/upsell`, …) and plain widget/screen names (e.g. `widgets/lesson-header`). The closer to real route paths, the better the graph match.
+- Run the automatic collision check after the brief, and prefer `check_existing_behavior` (`graph` → `quick`) over asking the PM current-behavior questions.
+
 ## Typical PRD concerns for this service
 
-1. **App Router vs legacy `/pages`.** If the feature touches a route currently in `src/pages/`, the PRD should state whether it stays legacy or is ported to `src/app/` as part of the work. Default to "port" for any non-trivial change.
-2. **SSR → Effector hydration.** Pages prefetch via tRPC `createCaller()` on the server; clients access data through Effector stores (`useUnit()`). PRDs cannot casually "use TanStack Query hooks in a component" without accounting for this pattern.
-3. **Server vs client boundary.** New pages are server-first; interactive widgets (forms, charts, builders) are isolated client components. PRD should call out the interactivity surface explicitly.
-4. **Auth expectations.** 401/403/423 handled through the parameters + cookie pipeline. PRDs cannot assume `useSession()` or a typical Next-Auth mental model.
-5. **Analytics coverage.** Effector `sample()` chains fire events deterministically. A feature without an event wired through a `sample()` chain won't show in dashboards — PRD must list the chains that need new events.
+1. **Legacy pages** *(background)*. Some routes still live in an older part of the codebase; touching them usually means engineering also modernizes them, which inflates effort. Scope/timeline signal only — whether and when to port is engineering's call.
+2. **Data-flow pattern is load-bearing** *(background)*. The app has one established way data reaches the screen; features that fight it cost more. Feasibility signal only.
+3. **Interactivity surface.** For the PRD: be explicit about which parts of the screen the user interacts with (forms, live-updating widgets) vs just reads — it materially changes effort, and it's plain product description.
+4. **Auth expectations** *(background)*. Session handling here is custom. Feasibility signal only; don't describe auth mechanics in the PRD.
+5. **Analytics coverage.** Analytics is a crucial part of every PRD. A feature ships with no dashboard visibility unless its events are explicitly specified — so the PRD must list every event to fire (name, trigger, properties) in the Analytics events table, confirmed with the PM. How events are wired is engineering's.
 
 ## Gotchas to flag in PRDs
 
-- **Do not add new code to `src/pages/`.** New work goes in `src/app/`. Legacy routes should be ported when touched.
-- **"Parameters" ≠ JWT claims.** User preferences (plan, language, etc.) live in the `parameters` server resource, not in cookies or headers. A PRD assuming header-based config will break.
-- **Effector + tRPC + TanStack coupling is load-bearing.** It's not three layers you can swap — data flows server → tRPC → Effector → component. Propose within this pattern.
-- **AGENTS.md at `/src/AGENTS.md`** documents the routing and skill rules for engineers; worth referencing in PRDs so engineering sees a matching structure.
-- **Onboarding has two directories** (`/onboarding`, `/onboarding-new`). If the PRD touches onboarding, state **which** explicitly — mixing them up is a common source of scope drift.
+- **"Parameters" ≠ login token** *(background)*. User preferences (plan, language, etc.) live in a server-side settings object. Vocabulary note for you — use "user parameters" correctly when the PM mentions plan or language settings.
+- **Two onboarding flows exist** (current and new). If the PRD touches onboarding, ask the PM **which flow** and name it explicitly in the PRD — mixing them up is a common source of scope drift, and it's a product-scope question.
