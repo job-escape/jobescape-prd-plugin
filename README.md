@@ -8,7 +8,7 @@ One orchestrator skill plus five per-service context skills — so the assistant
 
 | Skill | Purpose |
 |---|---|
-| `prd-writer` | Orchestrator. Identifies the target service, runs a clarifying-questions protocol if the brief is thin, and drafts the PRD using the standard template. |
+| `prd-writer` | Orchestrator. Identifies the target service, runs a clarifying-questions protocol if the brief is thin (plus a design-first structured interview when Figma designs exist), and drafts the PRD using the standard template. |
 | `prd-funnel` | Context for the conversion funnel runtime (quiz steps → selling page → checkout). A/B variants, payment processors, BigQuery analytics. |
 | `prd-editscape` | Context for the WYSIWYG MDX editor for lesson authoring. Custom components, viewport preview, current analytics gap. |
 | `prd-jobescape-app` | Context for the React Native / Expo mobile app. Native-rebuild gotchas, iOS/Android parity, IAP, deep links. |
@@ -35,6 +35,17 @@ What happens:
 2. If the brief is missing 3+ essential pieces (problem, outcome, entry point, scope hints, design direction, success measure), you'll get a small numbered list of clarifying questions.
 3. A full PRD draft is produced using the standard template: Summary, Problem, Goals & Non-goals (stable NG-IDs), Requirements (numbered atomic R-rows — the behavioral contract), Design (per-screen table), Analytics events table, Open questions (stable Q-IDs).
 4. Unknowns are marked inline as `**[TBD — {specific question}]**` rather than guessed. Product unknowns only — technical details (file paths, APIs, release mechanics) are excluded from the PRD entirely, and the assistant never asks the PM technical questions. Open Questions carries only what's still unanswered when the draft lands; answered questions become settled content in the relevant sections.
+
+### Design-first intake (when you have Figma designs)
+
+If you attach or link Figma designs for the feature, the assistant switches to a structured interview instead of free-form questions:
+
+1. **Ingest & scope** — it enumerates the screens in the file, builds a per-screen inventory of every component, its actions, and its states (including states the designer *didn't* draw — empty, loading, error), and confirms scope with you ("anything in this feature not in this file?").
+2. **Per-screen rounds** — for each screen it shows what it read from the design, then asks only the genuine product decisions (3-5 questions per message), with a running coverage count ("Course List: 9 settled, 2 open").
+3. **Flow pass** — one round for what no frame contains: navigation between screens, entry points, segments, analytics.
+4. **Close-out** — a final ledger of everything settled vs. open, before the draft is written.
+
+The interview ends only when every inventory item is answered, marked TBD with an owner, or ruled out of scope — not when the assistant "feels done". To speed it up you can answer "standard" / "same as X" to any question, or confirm proposed defaults in bulk.
 
 The Design section is a per-screen table: each screen/flow step gets a stable S-ID, its Figma **node** links (copy via "Copy link to selection") per platform (iOS / mobile web / desktop), and an explicit design status — designed (with which states), no design planned, or pending. Figma links are optional; the status column is not. Have those node links (and the analytics-events Figma URL) handy when drafting.
 
