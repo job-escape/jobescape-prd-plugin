@@ -1,5 +1,12 @@
 # Drafting the PRD — template and section rules
 
+## Contents
+- Versioning
+- Audience and language
+- Owner fields
+- Template (Sections 1–7, with per-section rules: R-row shapes, S-table status rules, analytics rules, open-question rules)
+- Anti-patterns
+
 Keep sections short — a PRD earns its length, it doesn't justify it.
 
 **Versioning:** start at `Draft v0.1` and bump the `Version` line on every material edit (scope change, resolved question, new/changed requirement — not typo fixes). Engineering diffs PRD versions to detect requirement drift mid-build, so an edited-but-unbumped PRD can cause stale work.

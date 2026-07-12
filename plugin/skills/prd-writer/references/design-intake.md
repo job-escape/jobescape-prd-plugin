@@ -1,8 +1,18 @@
 # Design-first intake (Step 2.5 — when Figma designs exist)
 
+## Contents
+- The coverage ledger — the exit rule
+- Phase 0 — Ingest and triage (silent)
+- Phase 1 — Per-screen rounds (7-step round shape)
+- Phase 2 — Flow pass (lives in its own file)
+- Phase 3 — Ledger close-out + escape question
+- Fatigue valves
+- Time pressure and "just draft it" (incl. override precedence)
+- Anti-patterns
+
 Run this protocol **after** the Step 2 brief and **before** drafting. It replaces free-form mid-draft questioning with a structured interview driven by an inventory of the design. The brief still comes first — problem, goals, segment, and success measure do not live in any Figma file.
 
-Without designs, skip the phases in this file and draft from the brief as before (mid-draft questions per Step 3) — but the flow pass (`references/flow-pass.md`) **still runs before any final draft**; its questions live in the flow, not in any frame. Design-first intake is a mode, not a prerequisite — a PRD may legitimately precede design.
+Without designs, skip the phases in this file and draft from the brief as before (mid-draft questions per Step 3) — but the flow pass (`flow-pass.md`, loaded per the hub's table) **still runs before any final draft**; its questions live in the flow, not in any frame. Design-first intake is a mode, not a prerequisite — a PRD may legitimately precede design.
 
 ## The coverage ledger — the exit rule
 
@@ -31,7 +41,7 @@ Inventory items are **questions, never answers**: an inferred state or action mu
 
 Then send the PM a **scope confirmation**, not a question batch: list the screens found in flow order, flag frames that look like abandoned explorations ("skip these?"), and ask the one question no inventory can answer: *"Is anything in this feature NOT in this file — pushes, emails, deep links, another surface?"*
 
-On a covered service, run the automatic collision check (`references/behavior-tools.md`) **here** (after ingest) rather than right after the brief — the inventory gives you an accurate `designSummary` and `touchedSurfaces`. Collision hits become inventory items like everything else.
+On a covered service, run the automatic collision check (rules in `behavior-tools.md`, already loaded per the hub's table) **here** (after ingest) rather than right after the brief — the inventory gives you an accurate `designSummary` and `touchedSurfaces`. Collision hits become inventory items like everything else.
 
 ## Phase 1 — Per-screen rounds
 
@@ -61,7 +71,7 @@ Work one screen per round, in user-flow order. Each round has a fixed shape:
 
 ## Phase 2 — Flow pass
 
-Runs after the last screen: see `references/flow-pass.md`. Its items enter the same ledger and the same exit rule.
+Runs after the last screen. Its protocol lives in `flow-pass.md` (loaded per the hub's table); its items enter the same ledger and the same exit rule.
 
 ## Phase 3 — Ledger close-out
 

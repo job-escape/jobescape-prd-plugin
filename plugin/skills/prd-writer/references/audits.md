@@ -6,7 +6,7 @@ Before sending any draft, run all six audits, the standing checks, and the linte
 
 1. **Anti-fabrication audit.** Read every line. For each statement of fact (a behavior, sort order, event name, empty state, edge case, copy string), ask: *"Did the PM say this, did a behavior-tool check confirm it, or did I make it up?"* If made up — replace with TBD or delete. A current-behavior claim counts as confirmed only if you actually ran the probe this session; proxy findings (web app standing in for mobile) count only if the PM confirmed parity. **This is the most important check.**
 
-   On a covered service, before final handoff, re-verify the load-bearing current-behavior claims in `deep` mode (see `references/behavior-tools.md`).
+   On a covered service, before final handoff, re-verify the load-bearing current-behavior claims in `deep` mode (rules in `behavior-tools.md`, already loaded per the hub's table).
 
 2. **Technical-content audit.** Read every line. Look for: file paths, framework/library names, API/service/table references, release mechanics (flags, OTA, rollout %), schema talk, low-level jargon. **Delete it** — there is nowhere in the PRD for it to move to. If deleting it loses a genuine cross-service dependency, restate that dependency as one plain-language sentence in the Summary. **Carve-out:** identifiers the PM explicitly stated (a named analytics event, a named system) stay verbatim — do not "clean" them out; see Core principle 1.
 

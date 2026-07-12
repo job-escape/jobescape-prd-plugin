@@ -8,9 +8,11 @@ The Behavior Codebase MCP may be connected to this session. It answers *current-
 - `check_existing_behavior` — answers targeted probes ("what currently happens when a user exits a lesson?"). Modes: `graph` (instant, no live analysis — try first), `quick` (live probe — for probes that come back `unresolved` from graph mode), `deep` (higher rigor — reserve for final handoff checks).
 - `list_behavior_repos` — lists covered repositories and graph coverage.
 
+Tool names are shown bare here; when more than one MCP server is connected, invoke them with the server prefix exactly as it appears in your session's tool list (`{server-name}:check_prd_collisions`).
+
 ## Rules of use
 
-- **Coverage.** Only the `frontend-alpha` repo is indexed (backend behavior surfaces automatically via cross-repo links). Use it directly for `frontend-alpha` PRDs. For `jobescape-app` PRDs, probe `frontend-alpha` as a **proxy** — the web app shares most of its logic with the mobile app — and label every proxy finding when relaying it: *"in the web app, X happens today — does the mobile app match?"* Parity is a PM confirmation, never a fact.
+- **Coverage — confirm, don't assume.** Run `list_behavior_repos` first to see what's currently indexed; coverage grows over time. As of writing: `frontend-alpha` is indexed directly (backend behavior surfaces automatically via cross-repo links); use it directly for `frontend-alpha` PRDs. For `jobescape-app` PRDs, probe `frontend-alpha` as a **proxy** — the web app shares most of its logic with the mobile app — and label every proxy finding when relaying it: *"in the web app, X happens today — does the mobile app match?"* Parity is a PM confirmation, never a fact. If `list_behavior_repos` shows a repo this file doesn't mention, use it directly and skip the proxy dance for that service.
 - **Tool output is background, like the per-service skills.** Findings inform what you write and which questions you ask; code evidence, file paths, and tool jargon never enter the PRD or questions to the PM. Relay findings in plain product language.
 - **Findings are facts about today, not decisions about tomorrow.** "The lesson header already auto-saves on exit" is a fact you can state; whether the new feature keeps that behavior is still the PM's decision — ask.
 - **If the tools are not available in this session**, fall back to ask/TBD everywhere. Never fabricate a "codebase check" you didn't run.
