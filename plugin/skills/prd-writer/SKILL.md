@@ -81,7 +81,7 @@ Read what the PM gave you against this checklist:
 
 ## Step 3 — Draft the PRD
 
-Read `references/template.md` and use its template and section rules exactly.
+Read `references/template.md` and use its format and section rules exactly. The final deliverable is **two files**: `prd.yaml` (structured, canonical — machines consume this) and `prd.md` (a human render generated from it). During the interview, everything shown to the PM stays human-readable (tables, numbered rows); the YAML compile happens once content is settled.
 
 **Mid-draft questions are normal** — a solid PRD pauses 2–5 times. When you'd otherwise invent something from the may-not-invent list: current-behavior fact on a covered service → probe the behavior tools; everything else → ask 1–3 focused product questions and wait. Valid: *"Should 'See more' open a new screen or expand inline?"*, *"What's the empty state — hide the row, featured courses, a placeholder?"*, *"All users, paid only, or early-access?"*. Invalid — never ask: *"Which API should this come from?"*, *"Behind a feature flag?"*, *"Does this need a migration?"*. After a design-first intake most decisions are already settled in the ledger; drafting is mostly compiling. When the PM answers a question, the answer goes **into the relevant PRD section** as settled content — an answered question never appears in Open Questions.
 
@@ -89,10 +89,10 @@ Read `references/template.md` and use its template and section rules exactly.
 
 ## Step 4 — Review before returning to the PM
 
-Read `references/audits.md` and run all six audits plus the standing checks. Then run the mechanical linter and fix every error it reports:
+Read `references/audits.md` and run all audits plus the standing checks. Then run the mechanical linter and fix every error it reports:
 
 ```
-python3 scripts/prd-lint.py {path-to-draft.md}
+python3 scripts/prd-lint.py {path-to-prd.yaml or draft .md}
 ```
 
 (Script lives in this skill's directory. The linter checks structure — IDs, dangling TBDs, owner fields; the audits check truth. Both must pass.)

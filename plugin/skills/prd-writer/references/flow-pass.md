@@ -10,7 +10,7 @@ For EVERY destination reachable from the feature (each nav item, card, button, s
 - **(b)** if the user can *finish* something there (a lesson, an assessment, a purchase, a flow), where do they land afterwards?
 - **(c)** do those answers change when the same destination is reached from somewhere else in the product (origin-scoping)?
 
-Screen inventories never contain these — every screen shows a place, no screen shows the way back or the landing after completion. Walk the loops item by item; "back works normally" is not an answer, it's a missing row. Optionally render the flow as a small map or list of edges for the PM to correct — a drawn artifact often catches what enumeration misses, but the questions themselves are the mandatory part.
+Screen inventories never contain these — every screen shows a place, no screen shows the way back or the landing after completion. Walk the loops item by item; "back works normally" is not an answer, it's a missing row. Answers land in the final YAML as `flow_map` edges (`kind: forward|return`) plus their requirement rows — an edge without a return counterpart is the linter-visible form of this gap. Optionally render the flow as a small map or list of edges for the PM to correct — a drawn artifact often catches what enumeration misses, but the questions themselves are the mandatory part.
 
 ## Screen-to-screen
 

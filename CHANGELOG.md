@@ -17,6 +17,12 @@ Interview rules driven by a five-condition simulation benchmark (writer agents r
 - **Mid-interview escape question** on long interviews, in addition to close-out.
 - Explicit precedence: "just draft it" overrides the ledger exit rule, never the design-pending final ban.
 
+**Structured-YAML deliverable** (format experiment winner — four re-expressions of the gold PRD were compared as coding-agent input; structured YAML won):
+
+- The final PRD is now `prd.yaml` (canonical, machine-first: typed requirement rows — id/status/screen/component/initial state/trigger/resulting state/per-platform design nodes/side effect/analytics — plus a flow map of forward/return edges, F-step groups, per-screen design status, reuse-of-existing-entities, and open items with `affected_r_ids` back-references) plus a generated human render `prd.md`. Interview drafts shown to the PM stay human-readable; the YAML compile happens at close-out.
+- `prd-lint.py` gained a YAML mode: ID uniqueness/gaps (Q gaps exempt — resolved ids retire), dangling `TBD → Qn` statuses, open-item owner/needed-by, `affected_r_ids` existence + reverse-sync, screens status presence, designed-without-nodes and unreturned-flow-edge warnings.
+- New always-on rules folded in from the regression run: never renumber IDs across versions (including the pre-design snapshot transition), and never settle absence — a brushed-off question is an open item, not a "no X is defined" claim.
+
 **Restructure** (same content, progressive loading):
 
 - `prd-writer/SKILL.md` reduced from a 417-line monolith to a ~115-line hub (always-on principles, step sequence, trigger→reference load table).

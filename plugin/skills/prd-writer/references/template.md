@@ -1,132 +1,189 @@
-# Drafting the PRD — template and section rules
+# Drafting the PRD — deliverable format and section rules
 
 ## Contents
+- The two artifacts: prd.yaml (canonical) + prd.md (render)
+- Interview drafts vs the final compile
 - Versioning
-- Audience and language
-- Owner fields
-- Template (Sections 1–7, with per-section rules: R-row shapes, S-table status rules, analytics rules, open-question rules)
+- Language rules (audience, row precision, owner fields)
+- The YAML schema (with skeleton)
+- Requirement-row rules
+- Screens & design status rules
+- Analytics rules
+- Open-items rules
+- The markdown render
 - Anti-patterns
 
-Keep sections short — a PRD earns its length, it doesn't justify it.
+## The two artifacts
 
-**Versioning:** start at `Draft v0.1` and bump the `Version` line on every material edit (scope change, resolved question, new/changed requirement — not typo fixes). Engineering diffs PRD versions to detect requirement drift mid-build, so an edited-but-unbumped PRD can cause stale work.
+The final PRD is delivered as **two files**:
 
-## Audience and language
+1. **`prd.yaml` — canonical.** Structured YAML; the single source of truth. Its primary consumers are coding agents and requirement-extraction pipelines, which filter and traverse typed rows instead of parsing prose.
+2. **`prd.md` — human render.** A readable markdown view generated FROM the YAML, opening with the line: *"Rendered from `prd.yaml` v{version} — the YAML is canonical; if they disagree, the YAML wins."* Regenerate it on every YAML change — never edit the render directly.
 
-The PRD's primary consumers are **coding agents and requirement-extraction pipelines**; humans skim it. Sections 1–3 are the skimmable prose head; everything behavioral lives in numbered rows. Optimize for precision and extractability, not narrative — in **plain product language** throughout:
+## Interview drafts vs the final compile
 
-- **Every behavioral statement must be user-observable and independently verifiable.** Describe what the user sees and does. *"the Early Access row is not shown"* is good; *"the section does not exist in the DOM"* is bad — implementation vocabulary is fabrication bait, not precision.
-- **Talk about user behavior and product outcomes**, not implementation. Write *"users see a list of recommended courses"* — never how that list is fetched or stored. There is no technical section anywhere in the PRD (Core principle 1).
-- **Plain English for technical terms.** If a domain term is unavoidable, define it in parens on first use.
-- **One commitment per sentence.** Extraction splits compound statements into separate rows anyway — pre-split them.
-- **Exact values, always.** Copy strings verbatim in quotes, numeric thresholds as numbers, each enum value named individually. "A reasonable limit" and "standard error copy" are unextractable.
+**During the interview, show the PM human-readable artifacts** — inventory tables, numbered requirement lists, flow maps — exactly as the intake protocols describe. PMs correct tables well and YAML poorly; the draft-review corrections are too valuable to lose to format friction. **Compile to YAML only when the content is settled** (after close-out / final corrections), then generate the render. Late-arriving corrections go into the YAML first, then re-render.
 
-## Owner fields
+## Versioning
 
-Where the template asks for an owner, use a **role**, not a person: `Owner: PM`, `Owner: design`, `Owner: analytics`, `Owner: content`. Don't ask the PM to assign names, and don't consult the team roster — assigning people happens outside the PRD draft.
+Start at `version: "0.1"` with `status: "Draft"`; bump on every material edit (scope change, resolved question, new/changed requirement — not typo fixes). Engineering diffs versions to detect requirement drift mid-build. The render always states the version it was generated from.
 
-## Template
+## Language rules
 
-```markdown
-# PRD: {Feature name}
+The same precision rules as ever, now applied to YAML field values:
 
-**Service:** {funnel | editscape | jobescape-app | frontend-alpha | funnel-constructor-editor}
-**Author:** {PM name}
-**Status:** Draft
-**Version:** Draft v0.1
-**Last updated:** {YYYY-MM-DD}
+- **Every behavioral value is user-observable and independently verifiable.** Describe what the user sees and does; implementation vocabulary is fabrication bait.
+- **Plain product language.** No file paths, frameworks, APIs, schemas, or release mechanics anywhere (Core principle 1). PM-stated identifiers (a named analytics event, a named system) stay verbatim.
+- **One commitment per row.** A row with two triggers or two outcomes is two rows.
+- **Exact values, always.** Copy strings verbatim in quotes inside field values; numeric thresholds as numbers; each enum state its own row or named state.
+- **Owner fields are roles** (`PM`, `design`, `analytics`, `content`, `engineering`), never names.
 
-## 1. Summary
-One paragraph. What are we building and why, in plain language. A new hire should understand the whole initiative from this paragraph alone. If the change also requires work in another service, say so here in one plain-language sentence.
+## The YAML schema
 
-## 2. Problem
-Who has the problem, what it looks like today, and evidence it's worth solving (user research, support tickets, metrics, intuition — label which). Avoid jumping to the solution. In dictation mode, this section is your reading of the walkthrough — label it for PM confirmation.
+Top-level keys, in order. Keys marked *(optional)* are included only when the feature has that content — never emit empty placeholders.
 
-## 3. Goals & Non-goals
-**Goals** (2-4 bullets, outcomes not features):
-- ...
+```yaml
+meta:
+  title: "PRD: {Feature name}"
+  service: "{funnel | editscape | jobescape-app | frontend-alpha | funnel-constructor-editor}"
+  author: "{PM name}"
+  status: "Draft"            # + design-pending note when applicable (see hub, Step 2)
+  version: "0.1"
+  last_updated: "YYYY-MM-DD"
+  design:                    # omit if no design exists
+    figma_file: "{file name}"
+    figma_base: "https://www.figma.com/design/{key}/{name}?node-id="
+  launch_prerequisites: []   # (optional) dependencies that must hold before ship
 
-**Non-goals** (explicitly out of scope — downstream, implementing a non-goal is a defect, so each gets a stable ID):
-- **NG-1:** ...
+summary: >-
+  One paragraph, plain language. What we're building and why; a new hire
+  understands the initiative from this alone. Cross-service dependencies
+  named here in one sentence.
 
-## 4. Requirements
-The contract. Numbered atomic rows grouped by sub-area — happy path groups first (in flow order), then states and edge cases. Each row is one sentence, one independently verifiable commitment, user-observable. IDs are stable: R-1, R-2, … in order of first appearance, **never renumbered**; withdrawn rows are struck through, not deleted.
+problem: >-
+  Who has the problem, what it looks like today, evidence (labeled).
+  In dictation mode: your derived reading, labeled for PM confirmation.
 
-### {Group: entry & navigation | core flow | states | edge cases | …}
-- **R-1:** When the user {trigger}, they see {observable outcome}.
-- **R-2:** Tapping {element} opens {destination}.
-- **R-3:** The list shows at most {N} items. *(every numeric limit is its own row)*
-- **R-4:** When {edge condition}, {behavior}. **[TBD → Q2]** *(unresolved rows carry a TBD marker, never a guess)*
+goals:
+  - "Outcome, not feature"
 
-Row rules:
-- Prefer one of five row shapes — they force a complete trigger + observable-outcome commitment and parse cleanly downstream:
-  - Always true: `The {screen/element} shows {…}.`
-  - Event: `When {user action or trigger}, {observable outcome}.`
-  - State: `While {condition holds}, {observable behavior}.`
-  - Edge / unwanted: `If {error or edge condition}, then {what the user sees}.`
-  - Segment / variant: `For {segment}, {behavior}.`
-  A commitment that fits none of these is usually compound — split it.
-- Exact copy in quotes: `**R-9:** The button label is "Continue learning".` Undecided copy is `**[TBD → Qn]**` — never placeholder prose that looks final.
-- Edge cases the PM decided are rows; edge cases nobody decided go to Open Questions. **Do not invent rows to look complete.**
-- Before writing each row, ask: *"Did the PM say this, or am I deciding it?"* If you're deciding — ask, or mark TBD.
+non_goals:                   # stable IDs — implementing a non-goal is a defect
+  - {id: "NG-1", item: "..."}
 
-## 5. Design
-Per-screen inventory, not one link to a whole file. Every screen or surface the feature touches gets a row with a stable ID (S-1, S-2, … — same stability rules as R-IDs) so requirement rows can reference it. Each link points to the **specific Figma node** (a URL with `node-id`, copied via Figma's "Copy link to selection"), so the reader lands on the exact frame. **Figma links are optional; design status per screen is not** — each row must say explicitly whether a design exists.
+audience_and_entry:
+  platforms: {list: [...], note: "e.g. desktop behaves like web unless a row says otherwise"}
+  segment: "who gets this"
+  rollout: >-                # straight release, or full experiment mechanics:
+    split, assignment unit and moment (PM-stated event verbatim),
+    control experience, existing-user behavior
+  entry_order: "where in the product flows this appears, what runs before it"
+  always_reachable: "standing navigation entry points, if any"
 
-| ID | Screen / step | iOS | Mobile web | Desktop | Status |
-|---|---|---|---|---|---|
-| S-1 | {name} | {node URL} | {node URL} | — | designed (default, empty, error) |
-| S-2 | {name} | — | — | — | no design planned — reuse {existing pattern the PM named} |
-| S-3 | {name} | — | — | — | **[TBD → Qn]** design pending |
+principles: {}               # (optional) named cross-cutting rules rows rely on,
+                             # e.g. origin-scoping of return paths, with R-refs
 
-- Fill only the platforms the feature ships on; leave the others as `—`.
-- In Status, list which states are actually designed (default / empty / loading / error / hover). **A state may be listed as "designed" only if a frame for that exact state exists in the file.** A state that is specified in Section 4 but has no frame is written as *"specified, no frame"* — never folded into "designed". This is the rule most often broken: summarizing a fully-specified screen as "designed" fabricates design coverage that reviewers and engineers will act on. Undesigned states the PM specified belong in Section 4 as R-rows; undecided ones go to Open Questions.
-- Design exists but you don't have the node link: `**[TBD — node link pending from design]**`. **Do not invent URLs** and do not link the whole file as a substitute for a node link.
-- **Figma shows how things look, never how they behave.** Anything interactive — what a tap does, transitions, what happens on scroll, which elements are tappable — must be an R-row in Section 4. Behavior left implied by a mock reaches engineering as a blocking question or, worse, a guess.
-- **Figma (analytics events map):** {URL} — keep as a single link below the table, if one exists.
+flow_map:                    # the loop-walk, made machine-readable
+  nodes: {H: "Homepage", ...}          # every screen/destination in the feature's reach
+  edges:
+    - {from: "...", to: "...", trigger: "...", f_step: "F-2", kind: forward}
+    - {from: "...", to: "...", trigger: "back", f_step: "F-9", kind: return}
+    - {from: "...", to: "...", trigger: "finished", f_step: "F-10", kind: return}
+  notes: []                  # incl. per-platform differences in edges
 
-## 6. Analytics events
-Table of events this feature must fire.
+f_steps:                     # flow steps grouped by area; stable F-IDs
+  {area}:
+    preamble: "invariants for the group"   # (optional)
+    steps:
+      - {id: "F-1", description: "...", sub_steps: []}
 
-**Omit this section entirely for `editscape` and `funnel-constructor-editor` PRDs** — those are internal tools with no tracking layer; don't propose one. If the PM wants a metric there, it becomes an Open Question, not an events table.
+requirements:                # the contract — typed atomic rows, stable R-IDs
+  - id: "R-1"
+    status: "Done"           # or "TBD → Qn" (must reference a live open item)
+    f_step_group: "F-1: Entry"
+    screen: "{screen}"
+    component: "{component}"
+    initial_state: "state before the trigger"
+    initial_node: {desktop: "220-2781", mobile: "87-3609"}   # or "—" / "— (existing screen)"
+    trigger: "user action or condition"
+    resulting_state: "observable outcome, exact copy in quotes"
+    resulting_node: {desktop: "...", mobile: "..."}
+    side_effect: "—"         # e.g. "story marked viewed"
+    analytics: "TBD"         # event name if decided, "TBD" if deferred, "—" if none
 
-**Do not invent event names or properties.** The service skill documents the naming convention (e.g. `pr_funnel_*`, `pr_webapp_*`). The *actual events* to fire are a PM decision — ask, or propose a list explicitly framed as a proposal the PM confirms.
+screens:                     # per-screen design status — stable S-IDs
+  - id: "S-1"
+    name: "{screen / step}"
+    nodes: {desktop: "220-2781", mobile: "87-3609"}          # "—" where platform n/a
+    status: "designed (default); loading/error not drawn (→ Qn)"
+    # status vocabulary: designed (with which states) | specified, no frame |
+    # no design planned — reuse {pattern} | design pending (→ Qn)
 
-| Event name | When it fires | Properties |
-|---|---|---|
-| `...` | ... | ... |
+reuse_of_existing_entities:  # (optional) what exists today and is reused, not rebuilt
+  verified_against_codebase: "YYYY-MM-DD or 'not verified — see open items'"
+  entities:
+    - {name: "...", note: "what exists, what the feature reuses, what must not be rebuilt",
+       verification_flag: "stale — recheck at handoff"}      # (optional)
 
-If event names or properties haven't been confirmed, write the row content as `**[TBD — propose with PM]**` rather than guessing names.
+analytics:
+  deferred: true             # when the PM defers: this flag + owner, nothing else
+  owner: "analytics"
+  needed_by: "analytics kickoff"
+  events: []                 # when decided: [{event, fires_when, properties}]
 
-If the PM **defers analytics** ("we'll define events when analytics work starts"), this section is one deferred TBD row with an owner and milestone — don't keep a proposed table "for reference"; a proposal left in the doc reads as decided.
+open_items:                  # live questions only — stable Q-IDs
+  - id: "Q3"
+    item: "the question, answerable in one sentence"
+    owner: "design"
+    needed_by: "design freeze"
+    affected_r_ids: ["R-1", "R-8"]
 
-## 7. Open questions
-**Only questions that are still unanswered when the draft is delivered.** Anything the PM already answered — in the brief, in clarifying questions, or mid-draft — is settled content in the sections above and must NOT be restated here. If every question got answered, this section says "None." (or is omitted).
-
-Strict scope: unresolved **product** decisions for product-side stakeholders (PM, design, content, analytics, support).
-
-**Belongs here:**
-- Behavior under specific conditions ("does a skipped module count toward streaks?")
-- Scope decisions ("does v1 ship for free users or paid only?")
-- UX / design decisions that materially affect the user ("what does the empty state look like?")
-- Success criteria not yet decided ("which metric do we move?")
-- Cross-team coordination questions ("does this need a copy review with content lead?")
-
-**Does NOT belong here — ever:**
-- Engineering / implementation questions of any kind: which service owns an endpoint, where data is stored, what migrations are needed, how something is released. Engineering answers those themselves after reading the PRD. Don't write them anywhere in the PRD — just leave them out.
-
-**Format:**
-
-- **Q1: {Question}** — Owner: {role, e.g. "PM", "design", "content"} — Needed by: {milestone, e.g. design freeze, kickoff, pre-launch}
-
-IDs are stable: number questions Q1, Q2, … in order of first appearance and **never renumber or reuse an ID**. A question answered *during drafting* becomes settled content and its ID is retired — it doesn't appear here. A question resolved *after the PRD was delivered* is struck through with its answer (`~~Q2: …~~ Resolved: {one-line answer}`) in the next version rather than deleted, so nothing referencing the ID dangles. Inline `**[TBD → Qn]**` markers elsewhere in the PRD must point at a live entry here. (Engineering workflows key off these IDs.)
-
-**Self-check before writing each open question:** "Is this still open, and would a product-side person be the one to answer it?" If it's already answered or an engineer would answer it — it doesn't belong here.
+id_bookkeeping:
+  note: >-
+    R/NG/S/Q/F IDs are stable across ALL versions: numbered in order of first
+    appearance, never renumbered, never reused — including across the
+    pre-design snapshot → design-checked transition. Withdrawn rows keep
+    their id with status "withdrawn". Q numbering is continuous; resolved
+    questions' answers are folded into rows and the id retired (listed here).
+  resolved_questions: "Q1–Q2, Q5 resolved during drafting"
 ```
+
+## Requirement-row rules
+
+- A row is **one trigger → one observable outcome** on one component. The old five row shapes map onto the fields: always-true rows have `trigger: "screen opens"`; state rows put the condition in `initial_state`; segment rows put the segment in `initial_state` or a Scope group.
+- `status` is `Done`, `TBD → Qn` (pointing at a live open item), or `withdrawn` — never prose.
+- Rows the PM decided are `Done`; edge cases nobody decided are open items, not rows. **Do not invent rows to look complete.** Before each row: *"Did the PM say this, or am I deciding it?"*
+- Scope rows (who does NOT get the feature: control group, existing users) are requirements too — give them their own group.
+- Undecided copy is `TBD → Qn` in the affected field — never placeholder prose that looks final.
+
+## Screens & design status rules
+
+- Every screen or surface the feature touches gets an S-entry with per-platform node ids and an explicit status. **A state may be listed as "designed" only if a frame for that exact state exists in the file**; specified-but-undrawn states are *"specified, no frame"*. Design-status overclaims are the single largest fabrication source in audited PRDs.
+- Node ids are real (from the file), relative to `meta.design.figma_base`. **Never invent node ids**; missing link = `TBD` with an open item.
+- Destinations that are existing screens outside the design file: `"— (existing screen)"`.
+- **Figma shows how things look, never how they behave** — behavior lives in requirement rows, always.
+
+## Analytics rules
+
+Omit the analytics key entirely for `editscape` and `funnel-constructor-editor` (no tracking layer). **Do not invent event names or properties** — the service skill gives the naming convention; actual events are a PM decision. If the PM defers analytics: `deferred: true` + owner + needed_by, per-row `analytics: "TBD"`, and no proposal tables left in the doc — a proposal left in reads as decided.
+
+## Open-items rules
+
+Only questions still unanswered at delivery; product-side owners only (engineering questions don't exist anywhere in the PRD). Each has a stable Q-id, an owner role, a needed-by milestone, and `affected_r_ids` listing every row whose status points at it (keep the two in sync — the linter checks both directions).
+
+## The markdown render
+
+Generate `prd.md` from the final YAML, for humans:
+
+- Header: title, service, status, version + the canonical-YAML notice.
+- Sections in schema order: Summary, Problem, Goals & Non-goals, Audience & entry (+ principles), Flow (edges as a readable list or diagram), Requirements (grouped by `f_step_group`, one line per row: `R-n — [status] — when {trigger} in {initial_state} → {resulting_state}`), Screens table with node links resolved to full URLs, Reuse notes, Analytics, Open items.
+- The render adds NOTHING that isn't in the YAML and drops nothing material. It is a view, not a document.
 
 ## Anti-patterns
 
-- **Don't restate answered questions in Open Questions.** If the PM answered it, the answer is settled content in the relevant section.
-- **Don't auto-invent analytics events.** Naming conventions come from the service skill; the actual events to fire are a PM decision — ask.
-- **Don't re-propose deferred analytics.** One deferral closes the topic: a TBD row with an owner, not another proposal table next round.
-- **Don't write the engineering solution.** PRDs describe **what** and **why**; engineering chooses **how**.
+- **Don't hand-edit the render** — change the YAML, regenerate.
+- **Don't draft in YAML with the PM** — tables for review, YAML for delivery.
+- **Don't renumber IDs between versions** — including from the pre-design snapshot to the design-checked version; new rows append after the highest existing id, whatever group they sit in.
+- **Don't restate answered questions in open_items** — answers are folded into rows; the Q-id is retired in id_bookkeeping.
+- **Don't auto-invent analytics events**; don't re-propose after a deferral.
+- **Don't write the engineering solution.** PRDs describe what and why; engineering chooses how.
+- **Don't settle absence.** A brushed-off or unanswered question is an open item — never a "no X exists / no X is defined" non-goal or row.
