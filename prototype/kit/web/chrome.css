@@ -1,0 +1,6 @@
+/* ── Web PREVIEW CHROME: the browser-sized frame around each Screen (never translated to code) */
+.je-web { position: relative; flex-shrink: 0; border-radius: 12px; overflow: hidden; background: var(--background); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 24px 60px -20px rgba(0, 0, 0, 0.35); }
+.je-web[data-device="mobile"] { border-radius: 40px; }
+.je-viewport { container: frame / inline-size; position: relative; width: var(--frame-w); height: var(--frame-h); overflow: auto; contain: layout paint; transform-origin: 0 0; --je-frame-h: var(--frame-h); }
+html[data-mode="flat"] .je-viewport { height: auto; min-height: var(--frame-h); overflow: visible; --je-frame-h: auto; }
+.je-viewport > .je-page { min-height: 100%; }

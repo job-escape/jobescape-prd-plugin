@@ -1,0 +1,327 @@
+{
+  "Checkbox": {
+    "notes": "DOM React renders: div.checkbox[data-slot=checkbox] > label.checkbox__content[data-slot=checkbox-content] (RAC CheckboxButton) > [hidden-input span] + span.checkbox__control[data-slot=checkbox-control] > span.checkbox__indicator[data-slot=checkbox-indicator][aria-hidden=true] > svg; the Label (class=\"label\" data-slot=\"label\") sits inside the content label. Hidden input (optional for CSS): RAC VisuallyHidden span (inline 1px clip-rect style) wrapping <input type=\"checkbox\"> as first child of the content label. Description / FieldError are DIRECT children of .checkbox, after the content label: <span class=\"description\" data-slot=\"description\">, <span class=\"field-error\" data-slot=\"field-error\" data-visible=\"true\"> (CSS .checkbox > [data-slot=description|field-error], ps-7; field-error is forced visible and text-muted here). STATE goes on the ROOT .checkbox: data-selected=\"true\", data-indeterminate=\"true\", data-invalid=\"true\", data-disabled=\"true\". React never sets aria-checked/aria-invalid on the root (they live on the hidden input); checkbox--disabled is CSS-only (React uses data-disabled on root). No :has(input:checked) fallback for checkbox. data-hovered / data-pressed / data-focus-visible are set by RAC on the CONTENT label: force them on [data-slot=checkbox-content]. Native .checkbox:hover/:active work; focus ring needs data-focus-visible=\"true\" on the content label (root div never focuses). INJECTED SVG (one, chosen by state, inside the indicator): checkmark <svg data-slot=\"checkbox-default-indicator--checkmark\" aria-hidden=\"true\" role=\"presentation\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" viewBox=\"0 0 17 18\" stroke-dasharray=\"22\" stroke-dashoffset=\"66\"><polyline points=\"1 9 7 14 15 4\"/></svg>. The tick is drawn by the stroke-dashoffset ATTRIBUTE (66 hidden, 44 visible), not by CSS (CSS only transitions it): selected static = data-selected=\"true\" on root AND stroke-dashoffset=\"44\". Indeterminate (replaces the checkmark; data-indeterminate=\"true\" on root): <svg data-slot=\"checkbox-default-indicator--indeterminate\" aria-hidden=\"true\" role=\"presentation\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" viewBox=\"0 0 24 24\"><line x1=\"21\" x2=\"3\" y1=\"12\" y2=\"12\"/></svg>. Required star: data-required=\"true\" is set on the content label, so a direct-child .label gets the asterisk (selector analysis); or use label--required.",
+    "propTargets": {
+      "variant": "Root (checkbox--secondary on .checkbox); when absent, inherited from CheckboxGroup via CheckboxGroupContext"
+    },
+    "attrProps": {
+      "isSelected": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-selected",
+        "target": "Root (.checkbox); also pair with svg stroke-dashoffset=44"
+      },
+      "isIndeterminate": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-indeterminate",
+        "target": "Root (.checkbox)"
+      },
+      "isInvalid": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-invalid",
+        "target": "Root (.checkbox)"
+      },
+      "isDisabled": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-disabled",
+        "target": "Root (.checkbox)"
+      }
+    },
+    "openQuestions": "generatorDraft partDetails.Indicator.dataSlot (checkbox-default-indicator--indeterminate) is misleading: the indicator span's own data-slot is checkbox-indicator; the --checkmark/--indeterminate values are on the inner svg. BEM mapping (checkbox__indicator) is correct, no partFix. Required star: label.css comment says option labels should be excluded, but the selector keys on the root data-slot (radio/checkbox), not on the content label, so a required Checkbox label does get the asterisk."
+  },
+  "CheckboxGroup": {
+    "notes": "Root: <div class=\"checkbox-group\" data-slot=\"checkbox-group\" role=\"group\"> (RAC adds role=group + aria-labelledby; React never emits role=checkboxgroup although label.css selects it). Children in order: group Label <span class=\"label\" data-slot=\"label\"> (RAC context forces a span here), optional <span class=\"description\" data-slot=\"description\">, group-level <span class=\"field-error\" data-slot=\"field-error\" data-visible=\"true\"> (checkboxes inside a group render no FieldError of their own), then the .checkbox items. CSS: .checkbox-group [data-slot=checkbox] {margin-top:1rem}, so every item root must carry data-slot=\"checkbox\" for spacing. RAC sets data-invalid / data-disabled / data-readonly / data-required = \"true\" on the group; CSS reacts indirectly: [data-invalid=true] .label turns all descendant labels red, [data-disabled=true] .label dims them, [data-required=true] > .label adds the asterisk to a direct-child label. variant: React emits checkbox-group--primary|--secondary on the group but NO CSS exists for either class. The real effect is context: each Checkbox without its own variant renders checkbox--secondary, so for a secondary group the author must add checkbox--secondary to every .checkbox item by hand. isDisabled/isInvalid/isRequired also flow by RAC state to items: set data-disabled=\"true\" / data-invalid=\"true\" on each item root yourself.",
+    "propTargets": {
+      "variant": "Root class is inert (no CSS); real effect cascades via CheckboxGroupContext to each Checkbox as checkbox--secondary"
+    },
+    "attrProps": {
+      "isInvalid": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-invalid",
+        "target": "Root (.checkbox-group); items need their own data-invalid"
+      },
+      "isDisabled": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-disabled",
+        "target": "Root (.checkbox-group); items need their own data-disabled"
+      }
+    },
+    "openQuestions": "checkbox-group--primary / --secondary are emitted by React but have no CSS rule; confirm the kit should treat them as inert."
+  },
+  "Radio": {
+    "notes": "DOM React renders: root div.radio[data-slot=radio] > label.radio__content[data-slot=radio-content] (RAC RadioButton) > [hidden-input span: same inline-style span as Checkbox but <input type=\"radio\">] + span.radio__control[data-slot=radio-control] > span.radio__indicator[data-slot=radio-indicator][aria-hidden=true], plus Label (class=\"label\" data-slot=\"label\") in the content label. Description / FieldError: direct children of .radio with data-slot=\"description\" / \"field-error\" (class description / field-error; ps-7). The indicator must be EMPTY (no children, no whitespace): the dot is .radio__indicator:empty::before and any child disables it. Selected: data-selected=\"true\" on the ROOT .radio (CSS uses presence selector [data-selected]); alternatively a real <input type=\"radio\" checked> anywhere inside .radio works via :has(input:checked) (radio only; checkbox/switch have no such fallback). data-invalid=\"true\" and data-disabled=\"true\" also go on the root .radio (React sets them from group state; the aria-invalid/aria-disabled aliases are never emitted; radio--disabled is CSS-only). Radio has NO native :hover/:active/:focus-visible fallback: hover, pressed and focus ring exist only as data-hovered=\"true\", data-pressed=\"true\", data-focus-visible=\"true\" on the content label [data-slot=radio-content] (RAC sets them there). Radio has no variant prop; the secondary look is set by .radio-group--secondary on the RadioGroup. Required star: data-required=\"true\" is set on root and content label when the group is required; a .label that is a direct child of the content label then shows the asterisk (selector analysis); alternative class label--required.",
+    "attrProps": {
+      "isDisabled": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-disabled",
+        "target": "Root (.radio)"
+      }
+    },
+    "openQuestions": "Selected state is group-driven in React (RadioGroup value); static authors set data-selected on the one chosen .radio. Required star: label.css intends to exclude option labels, but the selector only excludes data-slot=radio/checkbox roots, not the content label, so in a required RadioGroup every option label likely gets an asterisk at runtime (selector analysis, not rendered). Runtime tag of a Label nested in a Radio inside RadioGroup is unverified (RAC LabelContext from the group may make it a span); CSS is tag-agnostic."
+  },
+  "RadioGroup": {
+    "notes": "Root: <div class=\"radio-group [radio-group--secondary]\" data-slot=\"radio-group\" role=\"radiogroup\" data-orientation=\"vertical|horizontal\">. data-orientation is REQUIRED (React always sets it, default vertical) and there is no orientation class: .radio-group[data-orientation=vertical] [data-slot=radio] {margin-top:1rem}; [data-orientation=horizontal] makes the group a wrapping row with gap-4 (so .radio items need data-slot=\"radio\"). Children: group Label <span class=\"label\" data-slot=\"label\"> (RAC context forces span), optional <span class=\"description\" data-slot=\"description\">, <span class=\"field-error\" data-slot=\"field-error\" data-visible=\"true\">, then .radio items. RAC also sets data-invalid / data-disabled / data-readonly / data-required = \"true\" on the group: [data-invalid=true] .label colors every descendant label danger, [data-disabled=true] .label dims them, data-required on the group gives the asterisk on a direct-child .label. variant: radio-group--secondary has real CSS (.radio-group--secondary .radio__control: no shadow, bg var(--default); unselected dot uses --radio-control-bg) and is applied on the group itself; radio-group--primary is inert. Radio itself has no variant prop. isDisabled/isInvalid/isRequired cascade to items by RAC state: put data-disabled=\"true\" / data-invalid=\"true\" on each .radio too.",
+    "propTargets": {
+      "variant": "Root (.radio-group--secondary styles descendant .radio__control; Radio has no own variant)"
+    },
+    "attrProps": {
+      "orientation": {
+        "values": [
+          "horizontal",
+          "vertical"
+        ],
+        "default": "vertical",
+        "attr": "data-orientation",
+        "target": "Root (.radio-group); no modifier class exists"
+      }
+    }
+  },
+  "Switch": {
+    "notes": "DOM React renders: root div.switch[data-slot=switch] > label.switch__content[data-slot=switch-content] (RAC SwitchButton) > [hidden-input span: as Checkbox but <input type=\"checkbox\" role=\"switch\">] + span.switch__control[data-slot=switch-control] > span.switch__thumb[data-slot=switch-thumb] (optionally containing span.switch__icon[data-slot=switch-icon]), plus Label (class=\"label\" data-slot=\"label\") in the content label. Description / FieldError: direct children of .switch with data-slot=\"description\" / \"field-error\"; indent is 3.25rem, 2.75rem for .switch--sm, 3.75rem for .switch--lg (keyed on the size class on the root). STATE on the ROOT .switch: data-selected=\"true\" (thumb moves via margin-inline-start, track bg --switch-control-bg-checked; aria-checked alias is never set by React), data-disabled=\"true\", data-invalid=\"true\". data-hovered / data-pressed / data-focus-visible = \"true\" belong on [data-slot=switch-content] (force them there); native .switch:hover and :active also work; focus ring only via data-focus-visible on the content label. No :has(input:checked) fallback. switch__label is CSS-only (text-base font-medium); React never emits it, the label is .label / [data-slot=label]. switch__icon has NO CSS rule: only .switch__thumb > * (flex, centered, size-full) styles thumb children; thumb text color flips to accent when selected, so currentColor svg icons follow. Size: switch--sm / switch--lg on the ROOT (md inert); CSS descends to control and thumb.",
+    "attrProps": {
+      "isSelected": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-selected",
+        "target": "Root (.switch)"
+      },
+      "isDisabled": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-disabled",
+        "target": "Root (.switch)"
+      }
+    },
+    "openQuestions": "generatorDraft elements includes switch__label, which is CSS-only and never emitted by React (verified by grep of react/dist); consider dropping it from elements."
+  },
+  "SwitchGroup": {
+    "notes": "Static markup: <div class=\"switch-group switch-group--vertical|--horizontal\" data-slot=\"switch-group\"><div class=\"switch-group__items\" data-slot=\"switch-group-items\"> ...one .switch per item... </div></div>. React ALWAYS wraps all children in the inner div.switch-group__items[data-slot=switch-group-items]; the author must write that wrapper by hand. The orientation modifier is always emitted on the root (default switch-group--vertical) and only affects the inner wrapper (.switch-group--horizontal .switch-group__items {flex-direction:row}); root itself is flex-col gap-6, items wrapper flex gap-4. Plain <div>, no RAC Group: no role, no context. Nothing cascades to the Switches: size (switch--sm/--lg) and disabled (data-disabled=\"true\") must be set on each .switch. Add role=\"group\" yourself if wanted (not emitted by React)."
+  },
+  "TextField": {
+    "notes": "Root: <div class=\"textfield [textfield--full-width]\" data-slot=\"textfield\"> (RAC TextField div, no role). Children are siblings directly under the root: <label class=\"label\" data-slot=\"label\" for=\"ID\">, <input class=\"input\" data-slot=\"input\" id=\"ID\"> (or <textarea class=\"textarea\" data-slot=\"textarea\"> or an .input-group), <span class=\"description\" data-slot=\"description\">, <span class=\"field-error\" data-slot=\"field-error\" data-visible=\"true\">. TextField CSS styles none of these: description needs class description (the only TextField rule on it is display:none when invalid), field-error needs data-visible (presence) or stays height:0/opacity:0, and .textfield--full-width [data-slot=input|textarea] {width:100%} only works if the input carries data-slot=\"input\"/\"textarea\". INVALID: set data-invalid=\"true\" on .textfield (hides every [data-slot=description] via display:none and turns [data-invalid=true] .label red) AND on the .input/.textarea itself; the red outline selector is .input[data-invalid=true] only (aria-invalid alone does nothing; RAC Input converts aria-invalid to data-invalid at runtime). aria-invalid=\"true\" on the root is also accepted by the hide-description rule. Other root attrs RAC sets: data-disabled, data-readonly, data-required (=\"true\"); data-required on the root puts the asterisk on a direct-child .label (or use label--required). variant is NOT a textfield class: TextFieldRoot only stores it in TextFieldContext and Input / TextArea / InputGroup read it, so the author adds input--secondary / textarea--secondary / input-group--secondary on those children.",
+    "propTargets": {
+      "variant": "Not applied to Root; cascades via TextFieldContext to Input (input--secondary), TextArea (textarea--secondary) and InputGroup (input-group--secondary)",
+      "fullWidth": "Root (textfield--full-width); CSS widens descendant [data-slot=input]/[data-slot=textarea]"
+    },
+    "attrProps": {
+      "isInvalid": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-invalid",
+        "target": "Root (.textfield) AND the inner .input/.textarea"
+      },
+      "isDisabled": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-disabled",
+        "target": "Root (.textfield); the inner input also needs disabled / data-disabled"
+      }
+    },
+    "openQuestions": "generatorDraft.props lists only fullWidth, but TextFieldRoot also accepts variant (primary|secondary, default primary via inputVariants) which has no class on the root."
+  },
+  "TextArea": {
+    "notes": "Static markup: <textarea class=\"textarea [textarea--secondary] [textarea--full-width]\" data-slot=\"textarea\">. Native element, RAC TextArea adds data attrs only. Native :hover, :focus and :disabled work (hover only in a hover:hover media query); data-hovered / data-focused / data-focus-visible = \"true\" force the states. Invalid: data-invalid=\"true\" on the textarea (aria-invalid alone does not style it; RAC converts aria-invalid to data-invalid). Disabled: disabled attribute, or data-disabled=\"true\" / aria-disabled=\"true\". variant falls back to the TextField context when the prop is absent (see TextField: add textarea--secondary by hand). fullWidth is a prop of TextArea itself; the TextField only widens it through .textfield--full-width [data-slot=textarea]. min-height 38px and field tokens come from CSS. Label / description / error go as siblings inside the .textfield (see TextField). Note: inside an InputGroup the textarea is a different part (InputGroup.TextArea: class input-group__input, data-slot=\"input-group-textarea\")."
+  },
+  "Input": {
+    "notes": "Static markup: <input class=\"input [input--secondary] [input--full-width]\" data-slot=\"input\">. Native :hover, :focus, :disabled work (hover under hover:hover); data-hovered / data-focused / data-focus-visible = \"true\" force states. Invalid: data-invalid=\"true\" on the input is the only selector (no aria-invalid rule; RAC Input maps aria-invalid to data-invalid at runtime). Disabled: disabled attribute, data-disabled=\"true\" or aria-disabled=\"true\". variant: when the prop is absent React reads it from TextFieldContext (or ComboBoxContext), so inside a secondary TextField the author must add input--secondary to the input. input--primary is inert. data-slot=\"input\" matters: .textfield--full-width [data-slot=input] widens it. Not the input used by InputGroup (that is .input-group__input / data-slot=input-group-input) nor SearchField (search-field__input). Label/description/error are siblings in the TextField, see TextField.",
+    "propTargets": {
+      "variant": "Root (input--secondary); defaults come from TextFieldContext / ComboBoxContext variant"
+    }
+  },
+  "InputGroup": {
+    "notes": "Static markup: <div class=\"input-group [input-group--secondary] [input-group--full-width]\" data-slot=\"input-group\" role=\"group\"> (RAC Group; role becomes presentation inside a TextField) containing <div class=\"input-group__prefix\" data-slot=\"input-group-prefix\">, <input class=\"input-group__input\" data-slot=\"input-group-input\"> (or <textarea class=\"input-group__input\" data-slot=\"input-group-textarea\">), <div class=\"input-group__suffix\" data-slot=\"input-group-suffix\">. The data-slot values are functional, not decorative: CSS uses :has([data-slot=input-group-prefix|suffix]) to strip input radius/padding, :has([data-slot=input-group-input|textarea]:focus) for the focus ring, :has([data-slot=input-group-textarea]) for items-start/auto height, [data-slot=input-group-textarea] for resize/min-height, and :autofill. Root state attrs (RAC Group): data-invalid=\"true\" (outline + border + bg), data-disabled=\"true\" or aria-disabled=\"true\" (dim), data-hovered, data-focus-within, data-focus-visible. Hover has a native :hover fallback; the focus ring is native-only (:has(...:focus)) with no attribute to force it. Root onClick (JS only) focuses the inner input; no CSS. Prefix/suffix are plain divs. Invalid border-color is var(--color-field-border-invalid), a variable declared nowhere (theme defines only --color-field-border, -hover, -focus) and not set by React/RAC: the 1px danger outline still renders, border-color falls back to the initial value (unverified: currentcolor); define --color-field-border-invalid on :root (e.g. var(--danger)) for a red border. variant: root class, or inherited from TextFieldContext when inside a TextField (then add input-group--secondary by hand). Label/description/error are siblings of the group inside .textfield.",
+    "propTargets": {
+      "variant": "Root (input-group--secondary); inherited from TextFieldContext when absent",
+      "fullWidth": "Root (input-group--full-width)"
+    },
+    "attrProps": {
+      "isInvalid": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-invalid",
+        "target": "Root (.input-group)"
+      },
+      "isDisabled": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-disabled",
+        "target": "Root (.input-group)"
+      }
+    },
+    "openQuestions": "--color-field-border-invalid is undeclared in HeroUI 3.2.1 (also used by search-field, number-field, color-input-group, date-input-group). InputGroup isInvalid/isDisabled being accepted as props relies on ...props reaching RAC Group (unverified in d.ts)."
+  },
+  "SearchField": {
+    "notes": "Static markup: <div class=\"search-field [search-field--secondary] [search-field--full-width]\" data-slot=\"search-field\" data-empty=\"true\"> > <label class=\"label\" data-slot=\"label\" for=\"ID\"> + <div class=\"search-field__group [search-field__group--full-width]\" data-slot=\"search-field-group\" role=\"group\"> containing <svg class=\"search-field__search-icon\" data-slot=\"search-field-search-icon\" aria-hidden=\"true\" fill=\"none\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\"> (React default IconSearch, magnifier path fill=currentColor; a custom child element gets the same class + data-slot), <input type=\"search\" class=\"search-field__input\" data-slot=\"search-field-input\">, <button type=\"button\" class=\"close-button close-button--default search-field__clear-button\" data-slot=\"search-field-clear-button\" slot=\"clear\" aria-label=\"Close\"> with the close svg (data-slot=\"close-button-icon\"); then optional Description / FieldError siblings of the group (class + data-slot as in TextField). The clear button is a CloseButton: its own data-slot=\"close-button\" is overridden by search-field-clear-button (rest props spread last). Functional hooks: data-slot=search-field-search-icon (:has => input pl-2, no left radius), the ATTRIBUTE slot=\"clear\" on the clear button (:has([slot=clear]) => input pr-2, no right radius), data-slot=search-field-input (autofill, secondary transparent bg), data-slot=search-field-clear-button (hide rule). STATE: data-empty=\"true\" on the ROOT while the input is empty hides the clear button (opacity 0, pointer-events none); omit it when the field has text. data-invalid=\"true\" on the ROOT (hides [data-slot=description]) AND on the GROUP (outline/border/bg). data-disabled=\"true\" (or aria-disabled) goes on the GROUP; there is no root disabled rule. Group hover: native :hover or data-hovered; focus ring: native :focus-within or data-focus-within=\"true\" on the group. --color-field-border-invalid (invalid border) is undeclared anywhere: outline still shows, border-color fallback unverified. fullWidth needs BOTH search-field--full-width on root and search-field__group--full-width on the group; variant is the root class only (.search-field--secondary .search-field__group).",
+    "propTargets": {
+      "fullWidth": "Root (search-field--full-width) AND Group (search-field__group--full-width)",
+      "variant": "Root (search-field--secondary styles descendant .search-field__group)"
+    },
+    "attrProps": {
+      "isEmpty": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-empty",
+        "target": "Root (.search-field); derived from input value (RAC render value, not a settable prop)"
+      },
+      "isInvalid": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-invalid",
+        "target": "Root (.search-field) AND Group (.search-field__group)"
+      },
+      "isDisabled": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-disabled",
+        "target": "Group (.search-field__group); React also sets it on root (no root CSS)"
+      }
+    },
+    "openQuestions": "Clear button aria-label: RAC context supplies a localized \"Clear search\" but HeroUI CloseButton passes aria-label=\"Close\" as a prop and RAC useContextProps does mergeProps(contextProps, props), so \"Close\" wins (verified in utils.mjs); static authors may still use a more specific label."
+  },
+  "Fieldset": {
+    "notes": "Static markup: <fieldset class=\"fieldset\" data-slot=\"fieldset\"> > <legend class=\"fieldset__legend\" data-slot=\"fieldset-legend\">, optional <span class=\"description\" data-slot=\"description\">, <div class=\"fieldset__field_group\" data-slot=\"fieldset-field-group\"> (note single underscore: field_group; children are spaced by :where(> :not(:last-child)) margin-bottom 1rem), <div class=\"fieldset__actions\" data-slot=\"fieldset-actions\"> (flex, gap-2, pt-1). fieldset__description is a tv slot with no React part and zero CSS rules (confirmed by grep): use the generic Description (class description, data-slot description). Disabled: React mirrors a native `disabled` attribute as data-disabled=\"true\" on the fieldset so [data-disabled=true] .label (and similar ancestor selectors) dim descendants; static markup needs BOTH disabled and data-disabled=\"true\". React also forwards isDisabled through RAC contexts (Button, CheckboxGroup, Link, RadioGroup, Slider, ToggleButton, ToggleButtonGroup), so div-based controls get data-disabled; a static author must put data-disabled=\"true\" on those descendants by hand (native inputs/buttons inherit :disabled from the fieldset). No props cascade through classes.",
+    "attrProps": {
+      "disabled": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-disabled",
+        "target": "Root (<fieldset>); also set native disabled"
+      }
+    },
+    "openQuestions": "partDetails Group.fn is FieldGroup (exported as Fieldset.Group); BEM mapping fieldset__field_group is correct."
+  },
+  "Form": {
+    "notes": "No HeroUI CSS exists for Form (no form.css, no .form rule) and React adds no class or data-slot: FormRoot is a bare RAC Form, i.e. a plain <form> (RAC only adds class react-aria-Form when no className is passed; it sets noValidate unless validationBehavior is native, default native). Static markup: plain <form> with no class; give field spacing yourself (e.g. wrap fields in .fieldset > .fieldset__field_group, or a flex-col gap utility). Runtime-only behavior that static HTML does not reproduce: RAC FormContext/validationErrors that make child fields data-invalid and render FieldError.",
+    "openQuestions": "generatorDraft block is null: confirm the kit should not map Form to any BEM class."
+  },
+  "Label": {
+    "notes": "Static markup: <label class=\"label\" data-slot=\"label\" for=\"ID\"> (RAC Label default element is label; a <span> when it is the group label of RadioGroup/CheckboxGroup via RAC context; CSS is tag-agnostic). Give EVERY label both class=\"label\" and data-slot=\"label\": field containers style [data-slot=label] (checkbox/radio/switch user-select + cursor, search-field w-fit, etc.) while the typography comes from .label. Descendant rules: [data-disabled=true] .label dims (opacity, no pointer events); [data-invalid=true] .label and [aria-invalid=true] .label turn text-danger. Required asterisk (::after \"*\" in danger): class label--required on the label, OR the label is a DIRECT child (selector uses >) of an element with data-required=\"true\" (union of two selectors: ancestor not role=group|radiogroup|checkboxgroup, or not data-slot=radio|checkbox). React sets data-required on TextField, SearchField, RadioGroup, CheckboxGroup roots and on the content labels of Checkbox/Radio/Switch. label--disabled / label--invalid / label--required classes are only emitted when Label itself receives isDisabled / isInvalid / isRequired; normal React flow relies on ancestor data attributes instead. Position: inside .checkbox__content / .radio__content / .switch__content for toggles; sibling above the control inside .textfield / .search-field / groups."
+  },
+  "Description": {
+    "notes": "Static markup: <span class=\"description\" data-slot=\"description\"> (RAC Text; React also emits slot=\"description\" and a generated id for aria-describedby; no field CSS selects [slot=description]). Always write both class and data-slot. Placement matters: inside .checkbox / .radio / .switch the rules are direct-child (> [data-slot=description]) so it must be a sibling of the content label, not inside it (indent ps-7 or 3.25rem for switch). In .textfield / .search-field it is hidden (display:none) on any [data-slot=description] descendant when the root has data-invalid=\"true\" or aria-invalid=\"true\"; elsewhere (RadioGroup, CheckboxGroup, Fieldset) only the .description class styles it (text-xs, muted, wrap). Disabled fields dim it via [data-disabled=true] [data-slot=description] (checkbox/radio/switch roots)."
+  },
+  "ErrorMessage": {
+    "notes": "Static markup: <span class=\"error-message\" data-slot=\"error-message\"> (RAC Text with slot=\"errorMessage\" also emitted). Always-visible danger text-xs with height:auto: unlike FieldError there is no data-visible gating, and no field container targets [data-slot=error-message] (only tag-group does), so it is not auto-hidden/placed. Validation messages managed by RAC use FieldError; ErrorMessage is for manually shown messages: the author includes it only in the error state. It does not cause the TextField description to hide; set data-invalid on the root for that."
+  },
+  "FieldError": {
+    "notes": "Static markup: <span class=\"field-error\" data-slot=\"field-error\" data-visible=\"true\"> (RAC FieldError -> Text slot=\"errorMessage\"). Visibility is the PRESENCE of data-visible (CSS .field-error[data-visible]); without it the element is height:0 / opacity:0. React hard-codes data-visible=\"true\" and renders the element only when the field is invalid and has content (default content = validation messages joined by a space), so in static HTML include it only in the invalid state. Inside .checkbox / .switch / .radio as a DIRECT child CSS forces it visible (height:auto, opacity 1, no transition) and text-muted (not danger), indented ps-7 (switch 3.25rem). In TextField/SearchField/groups it is danger text-xs with px-1 and a height/opacity transition; those containers also hide their description when data-invalid=\"true\".",
+    "attrProps": {
+      "visible": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-visible",
+        "target": "Root (.field-error); not a real prop, React hard-codes data-visible=true (presence is what CSS checks)"
+      }
+    }
+  },
+  "ToggleButton": {
+    "notes": "Static markup: <button type=\"button\" class=\"toggle-button toggle-button--default [toggle-button--sm|--lg] [toggle-button--icon-only]\" data-slot=\"toggle-button\" aria-pressed=\"false\">. Selected: data-selected=\"true\" is the ONLY selector (aria-pressed alone styles nothing); also set aria-pressed=\"true\" for a11y (in a single-select ToggleButtonGroup RAC uses role=\"radio\" aria-checked instead of aria-pressed). Disabled: disabled attribute or aria-disabled=\"true\" (React sets data-disabled too, but CSS does not use it). Native :hover (hover:hover media) and :active work; data-hovered / data-pressed = \"true\" force them. Focus ring: the native selector is :focus-visible:not(:focus), which cannot match, so the ring appears only with data-focus-visible=\"true\". Any child svg is auto-sized (size-5, sm:size-4, -mx-0.5; size-4 for --sm); there is no spinner exclusion. Inside a ToggleButtonGroup only `size` cascades (via ToggleButtonGroupContext): the author mirrors the group size by adding toggle-button--sm/--lg to each button; variant, isIconOnly and fullWidth do not cascade. TOGGLE_BUTTON_GROUP_CHILD is exported but unused by ToggleButton (unlike Button's BUTTON_GROUP_CHILD). Selected tokens (--toggle-button-bg-selected, --toggle-button-fg-selected) are declared in CSS, nothing set inline.",
+    "propTargets": {
+      "size": "Root; when absent inherited from ToggleButtonGroup via ToggleButtonGroupContext (adds toggle-button--sm|--lg)"
+    },
+    "attrProps": {
+      "isSelected": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-selected",
+        "target": "Root (.toggle-button)"
+      }
+    }
+  },
+  "ToggleButtonGroup": {
+    "notes": "Static markup: <div class=\"toggle-button-group toggle-button-group--horizontal|--vertical [toggle-button-group--full-width] [toggle-button-group--detached]\" data-slot=\"toggle-button-group\" role=\"radiogroup|toolbar\" data-orientation=\"horizontal\"> containing .toggle-button children. RAC sets role=radiogroup for single selection (default selectionMode is single, verified in useToggleGroupState) and toolbar for multiple; data-orientation is emitted but CSS keys only on the --horizontal/--vertical classes (orientation class is always emitted, default horizontal); data-disabled=\"true\" when isDisabled (no CSS on the group). CSS is structural (.toggle-button:first-child / :last-child set the outer radius; all others radius 0; pressed scale removed; focus ring inset), so keep buttons as first/last children. --detached adds gap-1, restores full radius per button and hides separators. --full-width makes children flex:1. Separator: <span class=\"toggle-button-group__separator\" data-slot=\"toggle-button-group-separator\" aria-hidden=\"true\"></span>: CSS is position:absolute (horizontal left:-1px;top:25%;width:1px;height:50%; vertical top:-1px;left:25%;width:50%;height:1px; bg currentColor at 15% opacity). The group is not positioned but .toggle-button is position:relative, so place it as the first child INSIDE each non-first .toggle-button (inferred from CSS; no usage example found in frontend-alpha). A separator as a direct group child would also break the :last-child radius rules. Cascade: only `size` reaches ToggleButtons by context (isDisabled via RAC group state disables each child, which static HTML must repeat as disabled on each button); fullWidth and isDetached are root classes only.",
+    "propTargets": {
+      "size": "Root (cascades to ToggleButton via ToggleButtonGroupContext; no class on the group itself)",
+      "isDisabled": "Root data-disabled + cascades to ToggleButton children by RAC state",
+      "fullWidth": "Root (toggle-button-group--full-width); CSS stretches child .toggle-button with flex:1",
+      "isDetached": "Root (toggle-button-group--detached)"
+    },
+    "openQuestions": "Separator placement inside the next button is inferred from CSS only (no example found in frontend-alpha); confirm against HeroUI docs."
+  },
+  "Button": {
+    "notes": "Static markup: <button type=\"button\" class=\"button button--primary [button--sm|--lg] [button--icon-only] [button--full-width]\" data-slot=\"button\">. React ALWAYS emits a variant class (default button--primary) plus button--md; a bare .button has --button-bg:transparent, so always add the variant class explicitly. Disabled: native `disabled` attribute or aria-disabled=\"true\" (React isDisabled sets disabled + data-disabled, but CSS only keys :disabled / [aria-disabled=true]). Hover (hover:hover media) and :active work natively; data-hovered / data-pressed = \"true\" force them. Focus ring: native selector is :focus-visible:not(:focus), which cannot match, so the ring only shows with data-focus-visible=\"true\" (RAC sets it). PENDING: data-pending=\"true\" (CSS only: pointer-events:none) and RAC ALSO sets aria-disabled=\"true\" while pending, which brings the disabled opacity; it flips type=submit to button. React injects NO spinner: the author writes one as a child, e.g. <span class=\"spinner spinner--sm spinner--current\" data-slot=\"spinner\" aria-hidden=\"true\"><svg data-slot=\"spinner-icon\" viewBox=\"0 0 24 24\">...</svg></span>. data-slot=\"spinner\" (or \"link-icon\") on an ancestor of an svg exempts that svg from the auto icon-sizing rule (.button svg => size-5, sm:size-4, -mx-0.5 my-0.5; .button--sm svg => size-4), so plain icon svgs need no size classes. Variant/size/isDisabled/fullWidth are direct props here; inside ButtonGroup see ButtonGroup for the context cascade.",
+    "propTargets": {
+      "size": "Root; when absent and the Button is a direct child of ButtonGroup, inherited from ButtonGroup context",
+      "variant": "Root; when absent and a direct child of ButtonGroup, inherited from ButtonGroup context",
+      "fullWidth": "Root; when absent and a direct child of ButtonGroup, inherited from ButtonGroup context",
+      "isIconOnly": "Root only (never cascades)"
+    },
+    "attrProps": {
+      "isPending": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-pending",
+        "target": "Root (.button); also add aria-disabled=\"true\" and write the spinner child by hand"
+      }
+    }
+  },
+  "ButtonGroup": {
+    "notes": "Static markup: <div class=\"button-group button-group--horizontal|--vertical [button-group--full-width]\" data-slot=\"button-group\" role=\"group\"> containing .button children (RAC Group adds role=group and data-disabled / data-hovered / data-focus-within / data-focus-visible; CSS uses none of them). The orientation class is always emitted (default horizontal). size and variant are NOT classes on the group. Cascade in React: ButtonGroupRoot clones every DIRECT child with the private prop __button_group_child (BUTTON_GROUP_CHILD); only such Buttons read ButtonGroupContext {size, variant, isDisabled, fullWidth} (their own props win). Static HTML has no context: put button--{variant}, button--sm|--lg, disabled and button--full-width on EACH .button (fullWidth also requires button--full-width per button for equal widths; the group class only sets w-full). CSS is structural: .button-group .button gets radius 0, only .button:first-child / :last-child get the outer radius, .button--outline neighbors drop shared borders, pressed scale is removed and the focus ring is inset; keep buttons as first/last children. Separator: <span class=\"button-group__separator\" data-slot=\"button-group-separator\" aria-hidden=\"true\"></span>: CSS is position:absolute (horizontal left:-1px;top:25%;width:1px;height:50%; vertical top:-1px;left:25%;width:50%;height:1px; bg currentColor, 15% opacity). The group is not positioned but .button is position:relative, so put it as the first child INSIDE each non-first .button (inferred from CSS; no example found in frontend-alpha); as a direct group child it would anchor to the wrong ancestor and break :last-child. separator__container/__line/__content selectors in separator.css are never emitted by React (the Separator component emits only separator, separator--orientation, separator--variant); button-group uses its own button-group__separator.",
+    "propTargets": {
+      "size": "Cascades to direct-child Button via ButtonGroupContext (button--sm|--lg); no class on the group",
+      "variant": "Cascades to direct-child Button via ButtonGroupContext (button--{variant}); no class on the group",
+      "isDisabled": "Root Group (data-disabled) + cascades to direct-child Button as disabled",
+      "fullWidth": "Root (button-group--full-width) AND cascades to direct-child Button (button--full-width)"
+    },
+    "openQuestions": "Separator placement inside the next button is inferred from CSS only; confirm against HeroUI docs. Orientation is read from RAC ToggleButtonGroupContext when the prop is absent (runtime only)."
+  },
+  "CloseButton": {
+    "notes": "Static markup: <button type=\"button\" class=\"close-button close-button--default\" data-slot=\"close-button\" aria-label=\"Close\"><svg data-slot=\"close-button-icon\" aria-hidden=\"true\" role=\"presentation\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\"><path fill=\"currentColor\" fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"(X shape)\"/></svg></button>. React injects the CloseIcon svg (16x16, single X path, fill=currentColor, data-slot=\"close-button-icon\") when no children are given, and aria-label=\"Close\"; the author writes both. React always emits close-button--default, which supplies bg-default, text-muted and the hover/pressed colors; a bare .close-button has no background or color. States: native :hover (hover:hover media) and :active (scale .93) or data-hovered / data-pressed = \"true\"; disabled via disabled / aria-disabled=\"true\"; data-pending=\"true\" (pointer-events:none; RAC also sets aria-disabled while pending); focus ring only with data-focus-visible=\"true\" (native selector :focus-visible:not(:focus) cannot match). Any svg child is forced to size-4. In SearchField the clear button is a CloseButton with extra class search-field__clear-button (size-5, mr-2, icon shrinks to size-3), data-slot overridden to search-field-clear-button and slot=\"clear\".",
+    "attrProps": {
+      "isPending": {
+        "values": [
+          "true"
+        ],
+        "default": null,
+        "attr": "data-pending",
+        "target": "Root (.close-button)"
+      }
+    }
+  }
+}

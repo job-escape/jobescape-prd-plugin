@@ -1,0 +1,79 @@
+/* ── 1. THEME ─────────────────────────────────────────────────────────────────
+   frontend-alpha's design system: HeroUI 3.2.1 tokens (light and dark, from the
+   stylesheet linked above) mapped the way the app maps them. Only tokens exist:
+   Tailwind's default palette, shadows and fonts are switched off, so bg-blue-500
+   or bg-white render nothing here and never reach the app. */
+@theme { --color-*: initial; --shadow-*: initial; --font-*: initial; --breakpoint-*: initial; }
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-instrument: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+@theme inline {
+  --color-background: var(--background); --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary); --color-background-inverse: var(--background-inverse);
+  --color-foreground: var(--foreground); --color-muted: var(--muted); --color-link: var(--link);
+  --color-surface: var(--surface); --color-surface-foreground: var(--surface-foreground); --color-surface-hover: var(--surface-hover);
+  --color-surface-secondary: var(--surface-secondary); --color-surface-secondary-foreground: var(--surface-secondary-foreground);
+  --color-surface-tertiary: var(--surface-tertiary); --color-surface-tertiary-foreground: var(--surface-tertiary-foreground);
+  --color-overlay: var(--overlay); --color-overlay-foreground: var(--overlay-foreground);
+  --color-default: var(--default); --color-default-hover: var(--default-hover); --color-default-foreground: var(--default-foreground);
+  --color-default-soft: var(--default-soft); --color-default-soft-hover: var(--default-soft-hover); --color-default-soft-foreground: var(--default-soft-foreground);
+  --color-accent: var(--accent); --color-accent-hover: var(--accent-hover); --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft); --color-accent-soft-hover: var(--accent-soft-hover); --color-accent-soft-foreground: var(--accent-soft-foreground);
+  --color-success: var(--success); --color-success-hover: var(--success-hover); --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft); --color-success-soft-hover: var(--success-soft-hover); --color-success-soft-foreground: var(--success-soft-foreground);
+  --color-warning: var(--warning); --color-warning-hover: var(--warning-hover); --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft); --color-warning-soft-hover: var(--warning-soft-hover); --color-warning-soft-foreground: var(--warning-soft-foreground);
+  --color-danger: var(--danger); --color-danger-hover: var(--danger-hover); --color-danger-foreground: var(--danger-foreground);
+  --color-danger-soft: var(--danger-soft); --color-danger-soft-hover: var(--danger-soft-hover); --color-danger-soft-foreground: var(--danger-soft-foreground);
+  --color-segment: var(--segment); --color-segment-foreground: var(--segment-foreground);
+  --color-border: var(--border); --color-border-secondary: var(--border-secondary); --color-border-tertiary: var(--border-tertiary);
+  --color-separator: var(--separator); --color-separator-secondary: var(--separator-secondary); --color-separator-tertiary: var(--separator-tertiary);
+  --color-focus: var(--focus); --color-backdrop: var(--backdrop);
+  --color-field: var(--field-background, var(--default)); --color-field-hover: var(--field-hover);
+  --color-field-foreground: var(--field-foreground, var(--foreground)); --color-field-placeholder: var(--field-placeholder, var(--muted));
+  --color-field-border: var(--field-border, var(--border)); --color-field-border-hover: var(--field-border-hover);
+  --color-field-border-focus: var(--field-border-focus); --color-field-focus: var(--field-focus);
+  --color-transparent: transparent; --color-current: currentColor;
+  --shadow-surface: var(--surface-shadow); --shadow-overlay: var(--overlay-shadow); --shadow-field: var(--field-shadow);
+  --radius-xs: calc(var(--radius) * 0.25); --radius-sm: calc(var(--radius) * 0.5); --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius); --radius-xl: calc(var(--radius) * 1.5); --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 3); --radius-4xl: calc(var(--radius) * 4); --radius-field: var(--field-radius, calc(var(--radius) * 1.5));
+  --ease-smooth: ease; --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94); --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1); --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-out-fluid: cubic-bezier(0.32, 0.72, 0, 1); --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --animate-spin-fast: spin 0.75s linear infinite; --animate-skeleton: skeleton 2s linear infinite;
+  @keyframes skeleton { 100% { transform: translateX(200%); } }
+}
+@custom-variant dark (&:is(.dark *));
+/* frontend-alpha's light-theme fix: soft foregrounds use the pure hue. */
+:root:not(.dark) {
+  --accent-soft-foreground: var(--accent); --success-soft-foreground: var(--success);
+  --warning-soft-foreground: var(--warning); --danger-soft-foreground: var(--danger);
+}
+
+/* ── 2. BREAKPOINTS answer to the frame, not the window ──────────────────────
+   The same class names as frontend-alpha (desktop:, phone:, md:, max-md: …);
+   each Gallery and Flow frame is a size container, so a 393px frame renders the
+   mobile layout even on a wide screen. In the app these are media queries. */
+@custom-variant phone (@container frame (width < 768px));
+@custom-variant desktop (@container frame (width >= 768px));
+@custom-variant tablet (@container frame (width < 992px));
+@custom-variant sm (@container frame (width >= 40rem));
+@custom-variant md (@container frame (width >= 48rem));
+@custom-variant lg (@container frame (width >= 64rem));
+@custom-variant xl (@container frame (width >= 80rem));
+@custom-variant 2xl (@container frame (width >= 96rem));
+@custom-variant max-sm (@container frame (width < 40rem));
+@custom-variant max-md (@container frame (width < 48rem));
+@custom-variant max-lg (@container frame (width < 64rem));
+
+/* ── 3. ICONS — @gravity-ui/icons by name; size with size-*, colour with text-* */
+@layer base {
+  i[data-icon] {
+    display: inline-block; flex-shrink: 0; width: 1em; height: 1em; background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat;
+  }
+}

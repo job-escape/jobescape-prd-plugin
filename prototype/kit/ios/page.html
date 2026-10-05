@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-mode="device">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feature name · iOS</title>
+
+{{KIT}}
+
+<!-- Motion sheet: this file's own animations. Only @keyframes; colours as tokens.
+     Apply with data-anim="name 600ms ease-in-out 200ms infinite both". -->
+<style data-motion-sheet>
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- HANDOFF NOTES
+Custom components:
+- none
+Needs HeroUI Pro:
+- none
+Not designed yet:
+- none
+Animation losses:
+- none
+Open questions:
+- none
+-->
+
+<!-- One <section data-screen> per Screen. Everything inside it becomes app code.
+     data-route:  tab-root | push | overlay | card-sheet
+     data-tabbar: id of the active tab (tab-root Screens only)
+     data-states: space-separated State names; data-when / data-unless on any
+                  element show or hide it per State. -->
+<section data-screen="example" data-route="push" data-states="default loading">
+  <div class="flex-1 bg-background pt-safe">
+    <header class="flex-row items-center justify-center border-b border-border px-4 py-3">
+      <button data-press="back" class="absolute left-4 size-8 items-center justify-center rounded-full bg-default">
+        <i data-icon="arrow-left" class="size-4 text-default-foreground"></i>
+      </button>
+      <p data-weight="medium">Screen title</p>
+    </header>
+
+    <main data-scroll class="gap-4 px-4 pt-4 pb-6">
+      <div data-hero="Surface" class="gap-2 rounded-xl" data-unless="loading">
+        <h2 data-type="h4" class="tracking-normal">Card title</h2>
+        <p data-type="body-sm" data-color="muted" class="leading-5">Body copy. 14/20, muted.</p>
+      </div>
+      <div data-hero="Skeleton" class="h-24 rounded-xl" data-when="loading"></div>
+    </main>
+
+    <footer class="border-t border-border bg-background px-4 pt-3 pb-safe-offset-3">
+      <button data-hero="Button" data-variant="primary" data-size="lg" data-press="action:submit">
+        <span data-slot="label">Continue</span>
+      </button>
+    </footer>
+  </div>
+</section>
+
+</body>
+</html>

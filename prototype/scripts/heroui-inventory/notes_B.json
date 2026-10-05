@@ -1,0 +1,208 @@
+{
+ "Calendar": {
+  "notes": "DOM (RAC month grid): div.calendar[data-slot=calendar][role=application] > header.calendar__header (button.calendar__nav-button[slot=previous|next][aria-label][data-slot=calendar-nav-button] x2 + h2.calendar__heading[aria-hidden=true] with month-year text, or a year-picker trigger in place of the heading) then table.calendar__grid[role=grid][data-slot=calendar-grid] > thead.calendar__grid-header[aria-hidden=true] > tr > th.calendar__header-cell x7 (weekday text; weekdayStyle is a Grid prop, default 'short'); tbody.calendar__grid-body > tr > td[role=gridcell] > div.calendar__cell[role=button][tabindex]. Only data-slot='calendar-grid' is selected by CSS (year picker); other parts use their class name as data-slot.\nIMPORTANT: .calendar__cell is on the INNER div, not the td. td and tr carry no class (calendar__grid-row is a tv slot React never emits; CSS targets '> tr' and 'td'). td gets aria-disabled='true' for non-selectable dates (disabled, unavailable, outside-month) and aria-selected='true' for selected. In day view (visibleDuration.days >= 7) blank slots are bare <td></td>.\nSTATE on div.calendar__cell (value 'true'): data-selected, data-today, data-outside-month, data-unavailable, data-disabled (a div is never :disabled, so the attribute is required). :hover/:active work natively (data-hovered/data-pressed only force). Focus ring: ':focus-visible:not(:focus)' can never match, so ONLY data-focus-visible='true' shows a ring. React gives outside-month cells data-outside-month AND data-disabled (RAC treats them as disabled; the disabled rule excludes them, so no strike-through) and never data-selected, so the [data-selected][data-outside-month] rule never fires. aria-readonly='true' on the table disables cell pointer events.\nINJECTED: nav icon (default when no children): svg.calendar__nav-button-icon[data-slot=calendar-nav-button-icon][aria-hidden=true][role=presentation] width/height 16, viewBox 0 0 16 16, fill none, path fill=currentColor fill-rule=evenodd, d previous='M10.53 2.97a.75.75 0 0 1 0 1.06L6.56 8l3.97 3.97a.75.75 0 1 1-1.06 1.06l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5a.75.75 0 0 1 1.06 0' next='M5.47 2.97a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06L9.44 8 5.47 4.03a.75.75 0 0 1 0-1.06Z'. Cell content = day number (custom children replace it). Optional dot: span.calendar__cell-indicator[aria-hidden=true][data-slot=calendar-cell-indicator] as DIRECT child of the cell (accent-foreground only when the cell has data-selected='true').\nLITERAL CLASSES calendar--week-view (visibleDuration.weeks) / calendar--day-view (visibleDuration.days) are plain strings React appends to root, not tv variants: add by hand. Year-picker parts: see CalendarYearPicker.",
+  "propTargets": {
+   "visibleDuration": "Root (adds literal class calendar--week-view / calendar--day-view; JS only otherwise)",
+   "isYearPickerOpen": "Root prop, but its effect is data-open='true' on YearPickerTrigger and YearPickerGrid (children)"
+  },
+  "attrProps": {
+   "isYearPickerOpen": {
+    "values": [
+     true,
+     false
+    ],
+    "default": false,
+    "attr": "data-open",
+    "target": "YearPickerTrigger, YearPickerGrid"
+   }
+  },
+  "partFixes": {
+   "YearPickerGridBody": null
+  },
+  "openQuestions": "YearPickerGridBody is a React Fragment that maps years to Cells and emits no element, so partFixes sets it to null. Year-grid top/height numbers (CalendarYearPicker) are derived from CSS, not measured."
+ },
+ "CalendarYearPicker": {
+  "notes": "Not standalone: parts live inside .calendar or .range-calendar. CSS structure requirements: (1) the day-grid table must be a DIRECT child of the calendar root with data-slot='calendar-grid' (RangeCalendar: 'range-calendar-grid'), since '.calendar:has(.calendar-year-picker__year-grid) > [data-slot=calendar-grid]' fades it out; (2) the year grid div is a sibling of that table in the same root (root becomes position:relative via :has); (3) the trigger must sit inside .calendar__header / .range-calendar__header (the header hides nav buttons via :has(.calendar-year-picker__trigger[data-open=true])).\nOPEN STATE: data-open='true' on BOTH button.calendar-year-picker__trigger (plus aria-expanded='true') and div.calendar-year-picker__year-grid. Closed = omit data-open (CSS only matches 'true'; React emits aria-expanded='false').\nTRIGGER: button[type=button].calendar-year-picker__trigger[data-slot=calendar-year-picker-trigger][aria-expanded][aria-label='<Month Year>, year selector'] > span.calendar-year-picker__trigger-heading (month-year text) + span.calendar-year-picker__trigger-indicator[aria-hidden=true] whose default child is the chevron-right svg (height/width 1em, viewBox 0 0 16 16, path as Calendar 'next'). Open: indicator rotates 90deg, heading takes accent colour.\nYEAR GRID: div.calendar-year-picker__year-grid[role=listbox][tabindex=-1][aria-hidden=true|false][data-slot=calendar-year-picker-grid]. CSS gives absolute, left/right 0, 3 columns, overflow-y auto, opacity 0 + pointer-events none until data-open. React writes INLINE style top:Npx; height:Npx (JS copies the day grid's offsetTop/offsetHeight); static HTML must hardcode them: top about 40px (24px nav button + 16px header pb-4), height about 28px + 36px per week row at the fixed 252px width (derived from CSS, unverified).\nCELL: button[type=button].calendar-year-picker__year-cell[data-slot=calendar-year-picker-year-cell][data-year=2026][aria-label=2026][aria-selected=true|false][tabindex=-1; the active year gets 0 while open] with the year text. Selected: data-selected='true' (aria-selected='true' is styled too); hover via :hover (hover+fine pointer) or data-hovered='true'; native :focus-visible works.\nGridBody renders NO element (Fragment mapping years to Cells), so it has no class. Default year list spans minValue..maxValue (1900-2099) unless visibleYears is set; static markup lists any years. isYearPickerOpen / defaultYearPickerOpen are props of the Calendar/RangeCalendar root.",
+  "propTargets": {
+   "isYearPickerOpen": "Parent Calendar/RangeCalendar Root (not a CalendarYearPicker prop); effect is data-open on Trigger and Grid"
+  },
+  "attrProps": {
+   "isYearPickerOpen": {
+    "values": [
+     true,
+     false
+    ],
+    "default": false,
+    "attr": "data-open",
+    "target": "Trigger, Grid"
+   }
+  },
+  "partFixes": {
+   "GridBody": null
+  },
+  "openQuestions": "Hardcoded top/height values for the year grid are derived from CSS sizes (nav button size-6, header pb-4, header cell pb-2 text-xs, td mt-1 on first row, 36px cells at 252px width), not measured."
+ },
+ "RangeCalendar": {
+  "notes": "Same skeleton and rules as Calendar with range-calendar* classes/data-slots (range-calendar-header, -nav-button, -grid, -cell, -cell-button, ...). table.range-calendar__grid[role=grid][aria-multiselectable=true][data-slot=range-calendar-grid]; td[role=gridcell] > div.range-calendar__cell[role=button]; tr/td carry no class (range-calendar__grid-row never emitted). Nav buttons use the same chevron svg as Calendar (icon class range-calendar__nav-button-icon).\nINJECTED (differs from Calendar): React wraps cell content in span.range-calendar__cell-button[data-slot=range-calendar-cell-button]. CSS styles it as a descendant (circle, today/hover/start/end colours), so the author must write this span inside every cell. The span gets data-selected='true' ONLY on range start/end (isSelectionStart||isSelectionEnd) and data-hovered/pressed/disabled, but no CSS keys on those except the indicator rule '[data-selected=true] > .range-calendar__cell-indicator': put span.range-calendar__cell-indicator[aria-hidden=true][data-slot=range-calendar-cell-indicator] INSIDE the button span.\nSTATE on div.range-calendar__cell (value 'true'): data-selected on EVERY date in the range incl. endpoints (soft accent track, radius 0); data-selection-start / data-selection-end on the endpoints (accent button, round caps); a one-day range puts both on one cell; data-today, data-outside-month, data-unavailable, data-disabled. Outside-month cells: data-outside-month + data-disabled, never data-selected. :hover/:active native; focus ring only via data-focus-visible='true'.\nRow-edge rounding depends on DOM: 'td:first-child > *', 'td:last-child > *', '[aria-disabled] + td > *', 'td:has(+ [aria-disabled]) > *'. The cell must be a direct child of td, and the td of every non-selectable date (disabled, unavailable, outside-month) needs aria-disabled='true'. aria-readonly='true' on the table disables cell pointer events.\nLITERAL CLASSES range-calendar--week-view / --day-view added by React to root. Year picker reuses calendar-year-picker__* parts; its crossfade keys on the direct-child table [data-slot=range-calendar-grid] (see CalendarYearPicker). Props not on Root: weekdayStyle on Grid.",
+  "propTargets": {
+   "visibleDuration": "Root (adds literal class range-calendar--week-view / range-calendar--day-view)",
+   "isYearPickerOpen": "Root prop, effect is data-open='true' on YearPickerTrigger and YearPickerGrid"
+  },
+  "attrProps": {
+   "isYearPickerOpen": {
+    "values": [
+     true,
+     false
+    ],
+    "default": false,
+    "attr": "data-open",
+    "target": "YearPickerTrigger, YearPickerGrid"
+   }
+  },
+  "partFixes": {
+   "YearPickerGridBody": null
+  },
+  "openQuestions": "YearPickerGridBody is a React Fragment that maps years to Cells and emits no element, so partFixes sets it to null."
+ },
+ "DateField": {
+  "notes": "Thin wrapper: Root = RAC DateField div.date-field[data-slot=date-field] (flex column, gap-1); only prop is fullWidth (date-field--full-width). All field visuals come from the Group part = DateInputGroup (classes date-input-group*; DateField.Group/Input/InputContainer/Segment/Prefix/Suffix are re-exports of the DateInputGroup parts), see DateInputGroup notes for DOM, segments and states.\nChildren of the root: Label (element with data-slot='label'; RAC renders it as a span, CSS only sets w-fit via [data-slot=label]), the Group, optional Description (data-slot='description'; hidden by CSS when the ROOT has data-invalid='true' or aria-invalid='true'), FieldError. Root state attrs from RAC: data-invalid, data-disabled, data-readonly, data-required (only data-invalid/aria-invalid matter to CSS; set data-invalid='true' on root AND on the group/segments to render an invalid field).\nMinimal static: <div class='date-field' data-slot='date-field'><span data-slot='label' class='label'>Birth date</span><div class='date-input-group' role='group' data-slot='date-input-group'>...segments...</div></div>. React also renders a hidden form <input> (not needed for CSS). Props not on Root: variant and the group-level fullWidth belong to Group (date-input-group--secondary / --full-width).",
+  "propTargets": {
+   "fullWidth": "Root (date-field--full-width); Group has its own separate fullWidth -> date-input-group--full-width",
+   "variant": "Group (DateInputGroup root, date-input-group--secondary); not a DateField root prop"
+  }
+ },
+ "DateInputGroup": {
+  "notes": "Root = RAC Group: div.date-input-group[role=group][data-slot=date-input-group] (inline-flex, h-9, bordered field). Typical children: [div.date-input-group__prefix[data-slot=date-input-group-prefix]] + div.date-input-group__input-container[data-slot=date-input-group-input-container] (scroll wrapper) > div.date-input-group__input[role=group][data-slot=date-input-group-input] > span.date-input-group__segment[data-slot=date-input-group-segment]*, + [div.date-input-group__suffix[data-slot=date-input-group-suffix]]. data-slot values on children are LOAD-BEARING: ':has([data-slot=date-input-group-prefix|suffix])' trims input radius/padding; '.date-input-group--secondary [data-slot=date-input-group-input]' makes the input transparent; the focus ring is suppressed via ':has([data-slot=date-picker-trigger|date-range-picker-trigger]:focus)' so a picker trigger inside must carry that data-slot.\nSEGMENTS (RAC DateSegment span): editable = role=spinbutton tabindex=0 contenteditable=true inputmode=numeric aria-label style='caret-color:transparent' data-type=month|day|year|hour|minute|second|dayPeriod|era; literal separators = span aria-hidden=true data-type='literal' (text '/', ':', ' '). Empty segment: data-placeholder='true' with placeholder text (mm/dd/yyyy); filled segment: no attribute. Focused segment styling = :focus (needs tabindex) or data-focused='true'. data-invalid='true' on each segment (red text) and data-disabled='true' (opacity .5).\nGROUP STATES: data-invalid='true' (danger outline + border), data-disabled='true' or aria-disabled='true'; :hover and :focus-within work natively (data-hovered / data-focus-within only force them; data-focused unused on the group). Prefix/Suffix are pointer-events:none unless an ancestor .date-picker / .date-range-picker exists (then auto, so the trigger button is clickable).\nRANGE: inside DateRangePicker the group holds two inputs; each .date-input-group__input needs attribute slot='start' / slot='end' (React passes slot to the div), and a span.date-range-picker__range-separator sibling; the [slot=start|end] rules (flex:none/pr-0, pl-0) only apply under ':has(.date-range-picker__range-separator)'.\nCSS GAP: invalid rule reads var(--color-field-border-invalid), which is not declared anywhere in @heroui/styles dist (only --color-field-border, -hover, -focus exist); declare it on :root (e.g. var(--danger)) or the invalid border-color likely computes to currentcolor. Props variant/fullWidth are on this Root.",
+  "openQuestions": "Border colour fallback when --color-field-border-invalid is undeclared (inferred as currentcolor from CSS spec, not checked in a browser)."
+ },
+ "DatePicker": {
+  "notes": "Root = RAC DatePicker div.date-picker[data-slot=date-picker] (inline-flex column gap-1; RAC adds data-open when open, data-invalid/data-disabled/data-focus-within, no CSS on them here). DatePicker has NO input parts of its own: compose Label + DateField.Group (DateInputGroup with segments; see DateInputGroup) + the Trigger inside the group's Suffix + Popover.\nTRIGGER: button[type=button].date-picker__trigger[data-slot=date-picker-trigger][aria-haspopup=dialog][aria-expanded][aria-label=Calendar] inside div.date-input-group__suffix; the data-slot value is selected by the DateInputGroup focus-ring rule. Its indicator: span.date-picker__trigger-indicator[aria-hidden=true][data-slot=date-picker-trigger-indicator] whose default child is the calendar icon svg (IconCalendar: width/height 1em, viewBox 0 0 13 14, fill none, one path fill=currentColor evenodd; source in @heroui/react icons.js). Trigger focus ring: only [data-focus-visible=true] works (':focus-visible:not(:focus)' can never match); disabled = :disabled | data-disabled | aria-disabled.\nPOPOVER: RAC Popover is portaled to <body> (not inside .date-picker): div.date-picker__popover[data-slot=date-picker-popover][role=dialog][tabindex=-1][data-trigger=DatePicker][data-placement=bottom|top|left|right]. RAC sets inline position:absolute; top/left (px); z-index; max-height, plus --trigger-width (px width of the DateInputGroup; CSS min-width) and --trigger-anchor-point ('x y' px; CSS transform-origin). CSS provides none of position/top/left/z-index, so static HTML must set them (position:absolute|fixed, top, left, z-index) and optionally --trigger-width. Content is a .calendar (252px) inside p-3. Enter/exit animations run only with data-entering='true' / data-exiting='true'; slide direction keys on data-placement^=top|bottom|left|right. RAC also adds a transparent fixed underlay and visually-hidden dismiss buttons (not needed).\nProps not on Root: placement lives on Popover (default 'bottom'); fullWidth/variant belong to the DateField Group.",
+  "attrProps": {
+   "placement": {
+    "values": [
+     "bottom",
+     "top",
+     "left",
+     "right"
+    ],
+    "default": "bottom",
+    "attr": "data-placement",
+    "target": "Popover"
+   }
+  },
+  "propTargets": {
+   "placement": "Popover (only affects entering-animation slide direction via data-placement under data-entering)"
+  }
+ },
+ "DateRangePicker": {
+  "notes": "Same structure as DatePicker with range-picker classes: Root = div.date-range-picker[data-slot=date-range-picker] (inline-flex column gap-1). Compose Label + DateField.Group + Popover. The group contains TWO inputs: div.date-input-group__input[slot=start] and [slot=end] (each with its own segments), a span.date-range-picker__range-separator[aria-hidden=true][data-slot=date-range-picker-range-separator] between them (default text ' - ' with spaces; px-1, placeholder colour), and a suffix with the trigger. The slot='start'/'end' attributes and the separator class are required for the DateInputGroup ':has(.date-range-picker__range-separator)' rules (start input flex:none pr-0, end pl-0).\nTRIGGER: button[type=button].date-range-picker__trigger[data-slot=date-range-picker-trigger][aria-haspopup=dialog][aria-expanded][aria-label=Calendar] inside div.date-input-group__suffix (data-slot value is read by the group focus-ring rule). Indicator span.date-range-picker__trigger-indicator[aria-hidden=true][data-slot=date-range-picker-trigger-indicator] default child = same calendar svg as DatePicker (viewBox 0 0 13 14, 1em). Only [data-focus-visible=true] shows the trigger ring.\nPOPOVER: portaled to <body>: div.date-range-picker__popover[data-slot=date-range-picker-popover][role=dialog][tabindex=-1][data-trigger=DateRangePicker][data-placement=bottom|top|left|right]; RAC inline: position:absolute; top; left; z-index; max-height; --trigger-width; --trigger-anchor-point. CSS supplies none of position/top/left/z-index, so a static author sets them. Contains a .range-calendar. data-entering='true' / data-exiting='true' trigger the animations; direction from data-placement^=top|bottom|left|right.\nProps not on Root: placement on Popover (default 'bottom'). .date-range-picker also sets pointer-events:auto on its .date-input-group__prefix/suffix.",
+  "attrProps": {
+   "placement": {
+    "values": [
+     "bottom",
+     "top",
+     "left",
+     "right"
+    ],
+    "default": "bottom",
+    "attr": "data-placement",
+    "target": "Popover"
+   }
+  },
+  "propTargets": {
+   "placement": "Popover (only affects entering-animation slide direction via data-placement under data-entering)"
+  }
+ },
+ "TimeField": {
+  "notes": "Thin wrapper identical in shape to DateField: Root = RAC TimeField div.time-field[data-slot=time-field] (flex column gap-1); only prop fullWidth (time-field--full-width). Visuals come from the Group = DateInputGroup (date-input-group* classes; TimeField.Group/Input/InputContainer/Segment/Prefix/Suffix re-export the DateInputGroup parts); see DateInputGroup notes. Segments are the same span.date-input-group__segment[data-slot=date-input-group-segment] with data-type=hour|minute|second|dayPeriod (and data-type=literal for ':' and the space before AM/PM); empty ones carry data-placeholder='true' with locale-driven placeholder text.\nRoot children: Label (data-slot='label'), Group, Description (data-slot='description'; hidden when root has data-invalid='true' or aria-invalid='true'), FieldError. Root state attrs: data-invalid, data-disabled, data-readonly, data-required. Props not on Root: variant (and group-level fullWidth) live on the Group part.",
+  "propTargets": {
+   "fullWidth": "Root (time-field--full-width); Group has its own fullWidth -> date-input-group--full-width",
+   "variant": "Group (DateInputGroup root, date-input-group--secondary); not a TimeField root prop"
+  },
+  "openQuestions": "Placeholder text for empty time segments is locale-driven by RAC and was not checked."
+ },
+ "ColorArea": {
+  "notes": "DOM: div.color-area[data-slot=color-area][role=group][aria-label] > div.color-area__thumb[data-slot=color-area-thumb][role=presentation]. RAC also puts two visually-hidden input[type=range] (x then y channel) inside the thumb; only needed for interactivity, not visuals.\nINLINE STYLES / CSS VARS (CSS reads these, never declares them): on the ROOT --color-area-background = the full CSS gradient (CSS rule is 'background: var(--color-area-background)'; RAC also writes the same gradient as inline background plus position:relative, touch-action:none, forced-color-adjust:none); on the THUMB --color-area-thumb-color = the currently selected colour as a CSS colour (CSS background-color:var(...); RAC also writes inline background-color). Gradient for HSB with x=saturation, y=brightness at hue H (derived from RAC useColorAreaGradient): 'linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent), hsl(H 100% 50%)'. For colorSpace=rgb RAC instead layers per-channel gradients and sets inline background-blend-mode:screen, which no CSS provides.\nTHUMB POSITION is inline only: .color-area__thumb has no position in CSS (only size-4, 3px white border, rounded). Author must write style='position:absolute; left:X%; top:Y%; transform:translate(-50%,-50%)' with X = x-channel fraction*100 and Y = (1 - y-channel fraction)*100 (RAC useColorAreaState.getThumbPosition; X mirrored in RTL). Root already has position:relative, aspect-ratio 1, max-w-56, inset 1px shadow.\nSTATE: data-focus-visible='true' on thumb (no native pseudo rule; ring only via attribute); data-dragging='true' on thumb (grows to size-5); data-disabled='true' on root (and thumb) for disabled. showDots (Root prop) = class color-area--show-dots (::after dot overlay; no extra element).",
+  "propTargets": {
+   "showDots": "Root (color-area--show-dots)"
+  },
+  "openQuestions": "Exact CSS colour string RAC writes for the thumb (getDisplayColor().toString()) was not verified; any valid CSS colour of the current value works."
+ },
+ "ColorField": {
+  "notes": "Thin wrapper: Root = RAC ColorField div.color-field[data-slot=color-field][data-channel=hex|<channel>] (flex column gap-1); only prop fullWidth (color-field--full-width). Field visuals come from the Group = ColorInputGroup (classes color-input-group*; ColorField.Group/Input/Prefix/Suffix are re-exports of the ColorInputGroup parts), see ColorInputGroup notes. Inside ColorField RAC gives the Group role='presentation' and passes isInvalid/isDisabled to it (-> data-invalid / data-disabled on the group).\nRoot children: Label (data-slot='label'), the Group, Description (data-slot='description', hidden by CSS when ROOT has data-invalid='true' or aria-invalid='true'), FieldError. Root attrs from RAC: data-invalid, data-disabled, data-readonly, data-required. Static invalid field: data-invalid='true' on root AND on .color-input-group. Minimal: div.color-field > span[data-slot=label] + div.color-input-group > input.color-input-group__input[data-slot=color-input-group-input][value='#0485F7']. With the channel prop React also renders a hidden form input (not needed for CSS). variant / group-level fullWidth belong to the Group part.",
+  "propTargets": {
+   "fullWidth": "Root (color-field--full-width); Group has its own fullWidth -> color-input-group--full-width",
+   "variant": "Group (ColorInputGroup root, color-input-group--secondary); not a ColorField root prop"
+  }
+ },
+ "ColorInputGroup": {
+  "notes": "Root = RAC Group: div.color-input-group[role=group (presentation when inside ColorField)][data-slot=color-input-group] (inline-flex, h-9, bordered). Children in order: optional div.color-input-group__prefix[data-slot=color-input-group-prefix] (usually holds a .color-swatch, see ColorSwatch), input[type=text].color-input-group__input[data-slot=color-input-group-input] (hex text), optional div.color-input-group__suffix[data-slot=color-input-group-suffix]. data-slot values are LOAD-BEARING: ':has([data-slot=color-input-group-prefix|suffix])' removes input side radius and tightens padding; '.color-input-group--secondary [data-slot=color-input-group-input]' makes the input transparent. Unlike date-input-group, prefix/suffix have NO pointer-events:none.\nSTATE: group data-invalid='true' (danger outline + border colour), data-disabled='true' or aria-disabled='true' (status-disabled on the group; also set disabled on the input). :hover and :focus-within are native (data-hovered / data-focus-within only force them). The input itself needs no state attrs.\nCSS GAP: invalid rule reads var(--color-field-border-invalid), which is never declared in @heroui/styles dist; declare it on :root (e.g. var(--danger)) or the invalid border colour likely computes to currentcolor. Props variant (color-input-group--secondary) and fullWidth (color-input-group--full-width) are on this Root.",
+  "openQuestions": "Border colour fallback when --color-field-border-invalid is undeclared inferred from CSS spec, not checked in a browser."
+ },
+ "ColorSlider": {
+  "notes": "DOM: div.color-slider[data-slot=color-slider][data-orientation=horizontal|vertical] > [label[data-slot=label]] + [output.color-slider__output[data-slot=color-slider-output]] + div.color-slider__track[data-slot=color-slider-track] > div.color-slider__thumb[data-slot=color-slider-thumb]. data-orientation on the ROOT is REQUIRED (all track/thumb sizing sits under .color-slider[data-orientation=...]; React defaults it to horizontal). The 3-area grid (label/output/track) collapses via ':has([data-slot=label])' and ':has(.color-slider__output)', so the label needs data-slot='label' and output the class. Label text defaults to the channel name (e.g. Hue); output text = formatted channel value. RAC puts role=group + aria-label on the TRACK and a visually-hidden input[type=range] inside the thumb (interactivity only).\nINLINE STYLES (CSS declares none): TRACK style = 'background: linear-gradient(to right, <stops>), repeating-conic-gradient(#efefef 0% 25%, #f7f7f7 0% 50%) 50% / 16px 16px; --track-start-color: <css colour at channel min>; --track-end-color: <css colour at channel max>'. Gradient direction 'to right' (LTR horizontal) or 'to top' (vertical); stops: hue = 7 stops at 0,60,...,360deg; lightness adds a middle stop; saturation/brightness/red/green/blue/alpha = 2 stops (channel min, channel max) with the other channels held at the current value. --track-start-color/--track-end-color drive the 0.625rem ::before/::after edge caps outside the track (start cap = colour over checkerboard; end cap = background-color only); without them caps are transparent. THUMB style = 'left:P%' (horizontal) or 'top:(100-P)%' (vertical), 'transform:translate(-50%,-50%)', and 'background-color:<current colour>' (React omits it when disabled so .color-slider__thumb[data-disabled=true] bg-default shows). CSS supplies position:absolute, top/left:50% on the cross axis, 16px size, 3px white border, shadow. P = (value-min)/(max-min)*100.\nSTATE: thumb data-dragging='true' (cursor grabbing), data-focus-visible='true' (ring only via attribute), data-disabled='true' on root and thumb; root div also accepts aria-disabled='true' (:disabled never applies to a div). Props: channel and colorSpace are JS-only (they decide gradient/stops); orientation is the data-orientation attribute on Root.",
+  "attrProps": {
+   "orientation": {
+    "values": [
+     "horizontal",
+     "vertical"
+    ],
+    "default": "horizontal",
+    "attr": "data-orientation",
+    "target": "Root"
+   }
+  },
+  "propTargets": {
+   "orientation": "Root (data-orientation; RAC also sets it on Track/Output but CSS only needs it on Root)"
+  },
+  "openQuestions": "Output text format per channel (units) is RAC number formatting and was not checked."
+ },
+ "ColorSwatch": {
+  "notes": "Single element, no child parts: div.color-swatch.color-swatch--circle|--square[role=img][aria-roledescription='color swatch'][aria-label='<colour name>'][data-slot=color-swatch]. The base class has NO border-radius: radius comes only from color-swatch--circle / --square (React default shape=circle), so always add one. Size: color-swatch--xs|sm|lg|xl (default md = 32px; color-swatch--md is an inert class).\nCOLOUR is inline only: style='--color-swatch-current: <any CSS colour>' (React sets it from the colour prop; the CSS background is linear-gradient(var(--color-swatch-current), var(--color-swatch-current)) over a checkerboard so alpha shows; inset 1px black/10% shadow). RAC also writes inline background-color and forced-color-adjust:none, redundant with the var. No state attributes. Props shape and size are on Root.",
+  "propTargets": {
+   "shape": "Root",
+   "size": "Root"
+  }
+ },
+ "ColorSwatchPicker": {
+  "notes": "DOM (RAC ListBox in grid layout): div.color-swatch-picker[role=listbox][aria-label][data-layout=grid][data-slot=color-swatch-picker] > div.color-swatch-picker__item[role=option][aria-selected][data-slot=color-swatch-picker-item][style='--color-swatch-current:<css colour>'] > div.color-swatch-picker__swatch[role=img][aria-roledescription='color swatch'][aria-label='<colour name>'][data-slot=color-swatch-picker-swatch][style='background-color:<css colour>'] + optional span.color-swatch-picker__indicator[aria-hidden=true][data-slot=color-swatch-picker-indicator].\nCOLOUR WIRING: the Swatch is a RAC ColorSwatch with ONLY class color-swatch-picker__swatch (it does NOT get .color-swatch); the CSS gives it no background, so its colour is the inline background-color RAC writes. --color-swatch-current is set inline on the ITEM and only drives the selected item border-color.\nSTATE: selected item = data-selected='true' (plus aria-selected='true') on .color-swatch-picker__item: border takes --color-swatch-current, swatch scales to .77, indicator child scales in. data-focus-visible='true' (also :focus-visible natively) and data-disabled='true' on item. Hover on swatch is native (scale 1.1).\nINDICATOR (React-injected, author must write): span.color-swatch-picker__indicator (absolute inset-0 centred, pointer-events none) whose CHILD gets the styling (selector '.color-swatch-picker__indicator > *': 1/3 size, white, scale(0), scale(1) when item selected). Default child: svg[data-slot=color-swatch-picker-checkmark][aria-hidden=true][role=presentation] viewBox 0 0 12 12 fill none stroke currentColor stroke-width 1.5 round caps/joins containing polyline points='2.5 6 5 8.5 9.5 3'. Note the span's data-slot is color-swatch-picker-indicator; 'color-swatch-picker-checkmark' is on the inner svg.\nCSS BUG: React sets data-light-color='true' on the indicator when luminance>0.5 (to get a black check), but the compiled rule is '.color-swatch-picker__indicator[data-light-color=true] .color-swatch-picker__indicator>*' (self-nested), so it can never match in v3.2.1; the check is always white. Use an inline color:#000 on the svg for light swatches.\nSize/shape/layout are Root classes restyling the Item via descendant selectors (color-swatch-picker--xs|sm|lg|xl, --square, --stack); item and swatch carry no modifier classes.",
+  "propTargets": {
+   "size": "Root (descendant selectors resize .color-swatch-picker__item)",
+   "variant": "Root (color-swatch-picker--square changes item/swatch radius via descendant selectors)",
+   "layout": "Root (color-swatch-picker--stack = flex-col; layout is not forwarded to RAC)"
+  }
+ },
+ "Slider": {
+  "notes": "DOM: div.slider[data-slot=slider][role=group][data-orientation=horizontal|vertical] > [label[data-slot=label]] + [output.slider__output[data-slot=slider-output]] + div.slider__track[data-slot=slider-track][data-orientation][data-fill-start][data-fill-end] > div.slider__fill[data-slot=slider-fill] + div.slider__thumb[data-slot=slider-thumb] (one per value). data-orientation on the ROOT is REQUIRED (all track/thumb sizing is under .slider[data-orientation=...]; React defaults horizontal). Label needs data-slot='label' (grid placement); output text = value, range values joined with ' – ' (en dash, spaces around).\nTRACK EDGE FLAGS (HeroUI computes; set by hand, 'true' or omit): single thumb: data-fill-start when value>min, data-fill-end when value==max; two thumbs: data-fill-start when first thumb is at min, data-fill-end when last thumb is at max. They colour the track's transparent 0.75rem side borders accent (horizontal border-inline-start/end; vertical border-bottom/top) so the fill reaches the track edges.\nINLINE STYLES: FILL horizontal style='left:S%; width:W%' (S = start fraction*100, 0 for one thumb; W = (end-start)*100); vertical style='bottom:S%; height:W%'. THUMB horizontal style='left:P%', vertical 'top:(100-P)%', plus transform:translate(-50%,-50%) in both (RAC also sets position:absolute and touch-action:none; CSS supplies position, top:50% / left:50% on the cross axis, thumb sizes and the visible knob as ::after 24x16 / 16x24). P = (value-min)/(max-min)*100. RAC thumb contains a visually-hidden input[type=range] (interactivity only).\nSTATE: thumb data-dragging='true' (knob scales .9), data-focus-visible='true' (z-10 ring; only via attribute), data-disabled='true' on root/track/fill/thumb; root div also data-disabled='true' or aria-disabled='true' (status-disabled; :disabled never applies to a div; label stays opaque). Slider.Marks: React emits div[data-slot=slider-marks] with class slider__marks but NO CSS rule exists for it (marked TODO in source).",
+  "attrProps": {
+   "orientation": {
+    "values": [
+     "horizontal",
+     "vertical"
+    ],
+    "default": "horizontal",
+    "attr": "data-orientation",
+    "target": "Root"
+   }
+  },
+  "propTargets": {
+   "orientation": "Root (data-orientation; RAC also sets it on Track/Output but CSS only keys on Root)"
+  }
+ },
+ "NumberField": {
+  "notes": "DOM: div.number-field[data-slot=number-field] (flex column; RAC data-disabled/data-invalid/data-readonly/data-required) > [label[data-slot=label]] + div.number-field__group[role=group][data-slot=number-field-group] + [description[data-slot=description]] + [FieldError]. The group is display:grid with grid-template-columns:40px 1fr 40px, so DOM order MUST be: decrement button, input, increment button.\nBUTTONS: button[type=button][slot=decrement|increment].number-field__decrement-button|increment-button[data-slot=number-field-decrement-button|increment-button][tabindex=-1][aria-label='Decrease|Increase'(+field label, localized)]. The slot attributes are load-bearing: '.number-field__group:has([slot=decrement|increment]) .number-field__input' strips the input's side radius. Default icon children (React-injected; custom children must carry the same data-slot to get size-4): svg[data-slot=number-field-decrement-button-icon|number-field-increment-button-icon][aria-hidden=true][role=presentation] width/height 16 viewBox 0 0 16 16 fill none, path fill=currentColor evenodd; minus d='M1.75 8a.75.75 0 0 1 .75-.75h11a.75.75 0 0 1 0 1.5h-11A.75.75 0 0 1 1.75 8'; plus d='M8 1.75a.75.75 0 0 1 .75.75v4.75h4.75a.75.75 0 0 1 0 1.5H8.75v4.75a.75.75 0 0 1-1.5 0V8.75H2.5a.75.75 0 0 1 0-1.5h4.75V2.5A.75.75 0 0 1 8 1.75'.\nINPUT: input[type=text][inputmode=numeric|decimal|text][aria-roledescription='Number field'].number-field__input[data-slot=number-field-input] (RAC removes role=spinbutton; value is formatted text). STATE: group data-invalid='true' (+ root data-invalid='true' to hide the description), data-disabled='true' or aria-disabled='true' on the group; buttons :active / data-pressed (scale .97), :disabled / data-disabled / aria-disabled. Hover and :focus-within are native on the group (data-hovered / data-focus-within only force them).\nCSS GAP: invalid rule reads undeclared var(--color-field-border-invalid) (declare on :root, e.g. var(--danger)).\nPROPS: fullWidth on Root yields number-field--full-width on root AND number-field__group--full-width on the group (cascades via React context to the Group): add both classes by hand. variant='secondary' = number-field--secondary on root only (restyles .number-field__group by descendant selector).",
+  "propTargets": {
+   "fullWidth": "Root + Group (number-field--full-width on root, number-field__group--full-width on group; cascades via context)",
+   "variant": "Root (number-field--secondary; styles the group via descendant selector)"
+  },
+  "openQuestions": "Hidden form input rendered when name is set (input[type=hidden]) is not needed for CSS."
+ },
+ "InputOTP": {
+  "notes": "Built on the 'input-otp' library, not RAC. Static visuals need only: div.input-otp > div.input-otp__group[data-slot=input-otp-group] > div.input-otp__slot[data-slot=input-otp-slot]* (repeat groups) with div.input-otp__separator[data-slot=input-otp-separator] (6x2px bar) between groups. React container is div.input-otp[data-input-otp-container][style='position:relative;cursor:text;user-select:none;pointer-events:none'] followed by an overlay div[style='position:absolute;inset:0;pointer-events:none'] holding the real input[data-input-otp][data-slot=input-otp][autocomplete=one-time-code][inputmode=numeric][maxlength=N] (class input-otp__input, which has no CSS rule) with a long inline style making it transparent, full-size, font-size:var(--root-height); the lib also injects <style id=input-otp-style>. Only needed for a working field.\nSLOT CHILDREN (React-injected): filled slot -> div.input-otp__slot-value[data-slot=input-otp-slot-value] containing the character (plays slot-value-in animation on mount); active AND empty slot -> div.input-otp__caret[data-slot=input-otp-caret] (absolute 2x16px blinking bar, centred by the flex slot).\nSLOT STATE attrs (value 'true'): data-active (the focused slot: z-10 + focus ring + field-focus bg), data-filled (has a char: field-focus bg), data-invalid, data-disabled. data-invalid/data-disabled come from Root isInvalid/isDisabled via React context to EVERY slot, so set them on each slot. data-hovered is never set by React and the container has pointer-events:none, so slot :hover never fires in React (static HTML shows :hover natively).\nROOT ATTRS GOTCHA: HeroUI's data-disabled / data-invalid / data-slot='input-otp' land on the hidden <input> (library rest props), NOT on the container, so the rule '.input-otp[data-disabled=true]' (cursor-not-allowed, opacity .5) never matches in React; setting it on the container in static HTML would double-dim with the per-slot data-disabled. variant='secondary' = class input-otp--secondary on the container (className -> container, inputClassName -> input).",
+  "propTargets": {
+   "variant": "Root (class input-otp--secondary on the container div; restyles slots via descendant selector)",
+   "isDisabled": "Root (cascades to every Slot via context as data-disabled; not on the container)",
+   "isInvalid": "Root (cascades to every Slot via context as data-invalid)"
+  }
+ }
+}
