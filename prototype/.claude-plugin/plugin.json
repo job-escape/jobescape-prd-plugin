@@ -1,0 +1,15 @@
+{
+  "name": "jobescape-prototype",
+  "version": "1.0.0",
+  "description": "Prototype skill for jobescape designers: clickable HTML designs for Web (frontend-alpha) and iOS (jobescape-app) built from the real UI libraries, tokens and Navigation, with a Gallery, a clickable Flow and a contract check for handoff.",
+  "author": {
+    "name": "jobescape"
+  },
+  "keywords": [
+    "design",
+    "prototype",
+    "handoff",
+    "heroui",
+    "jobescape"
+  ]
+}

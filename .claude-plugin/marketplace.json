@@ -3,16 +3,28 @@
   "owner": {
     "name": "jobescape"
   },
+  "description": "jobescape's internal plugins: PRD authoring for PMs and HTML Prototypes for designers.",
   "plugins": [
     {
       "name": "jobescape-prd",
       "source": "./plugin",
       "description": "PRD-authoring skills for jobescape PMs — orchestrator + 5 service-context skills.",
-      "version": "0.6.0",
+      "version": "0.9.0",
       "keywords": [
         "prd",
         "product-requirements",
         "product-management"
+      ]
+    },
+    {
+      "name": "jobescape-prototype",
+      "source": "./prototype",
+      "description": "Prototype skill for jobescape designers — clickable HTML designs for Web and iOS built from the real UI libraries, with Gallery, Flow and a contract check.",
+      "version": "1.0.0",
+      "keywords": [
+        "design",
+        "prototype",
+        "handoff"
       ]
     }
   ]

@@ -1,0 +1,133 @@
+{
+  "Meter": {
+    "notes": "Root is a div: data-slot=\"meter\", role=\"meter progressbar\" (RAC useMeter), aria-valuenow, aria-valuemin (0), aria-valuemax (100), aria-valuetext (Intl percent of (value-min)/(max-min), e.g. \"60%\"), plus aria-labelledby=<label id> or aria-label. Children must be DIRECT children of the root (grid areas \"label output\" / \"track track\"): label = <span class=\"label\" data-slot=\"label\" id=\"...\"> (CSS selects [data-slot=\"label\"] for grid-area:label; this is the only data-slot the CSS uses; React/RAC forces the label element to span); output = <span class=\"meter__output\" data-slot=\"meter-output\"> (React fills it with aria-valuetext when empty; write the text by hand); track = <div class=\"meter__track\" data-slot=\"meter-track\"> containing <div class=\"meter__fill\" data-slot=\"meter-fill\">. REQUIRED inline style on Fill: style=\"width:N%\" with N = (clamp(value,min,max)-min)/(max-min)*100, unrounded (e.g. 33.333333333333336%). Fill sets no CSS vars; width animates 300ms. Fill colour comes from --meter-fill set by the meter--<color> class on the root. No indeterminate state exists for Meter (no CSS; RAC Meter has no isIndeterminate). Disabled is a CSS-only hook React never emits: set data-disabled=\"true\" or aria-disabled=\"true\" on the root (opacity .5, pointer-events none).",
+    "propTargets": {
+      "value": "Root props; surface as aria-valuenow/aria-valuetext on root and as inline style width:N% on Fill (Output text defaults to aria-valuetext)",
+      "minValue": "Root (aria-valuemin; used in the Fill width formula)",
+      "maxValue": "Root (aria-valuemax; used in the Fill width formula)"
+    }
+  },
+  "ProgressBar": {
+    "notes": "Root is a div: data-slot=\"progress-bar\", role=\"progressbar\", aria-valuenow, aria-valuemin (0), aria-valuemax (100), aria-valuetext (e.g. \"60%\"), plus aria-labelledby=<label id> or aria-label. DIRECT children of the root (grid \"label output\" / \"track track\"): label = <span class=\"label\" data-slot=\"label\" id=\"...\"> (only data-slot the CSS selects); <span class=\"progress-bar__output\" data-slot=\"progress-bar-output\"> (React text defaults to aria-valuetext; write by hand); <div class=\"progress-bar__track\" data-slot=\"progress-bar-track\"> containing <div class=\"progress-bar__fill\" data-slot=\"progress-bar-fill\">. Determinate: Fill needs inline style=\"width:N%\", N = (clamp(value,min,max)-min)/(max-min)*100 (unrounded), and the root MUST carry aria-valuenow. Indeterminate is keyed on the ABSENCE of aria-valuenow: CSS .progress-bar:not([aria-valuenow]) .progress-bar__fill forces width:40% and runs progress-bar-indeterminate 1.5s (translateX -100% to 350%). For a static indeterminate bar omit aria-valuenow and aria-valuetext on the root and omit the width style on Fill (React sets width only when not isIndeterminate; an inline width would override the 40%). A determinate bar missing aria-valuenow animates as indeterminate. Fill colour comes from --progress-bar-fill set by progress-bar--<color> on the root; width animates 300ms. Disabled is a CSS-only hook React never emits: set data-disabled=\"true\" or aria-disabled=\"true\" on the root.",
+    "propTargets": {
+      "value": "Root props; surface as aria-valuenow/aria-valuetext on root and as inline style width:N% on Fill (Output text defaults to aria-valuetext)",
+      "minValue": "Root (aria-valuemin; used in the Fill width formula)",
+      "maxValue": "Root (aria-valuemax; used in the Fill width formula)",
+      "isIndeterminate": "Root prop; effect is omitting aria-valuenow/aria-valuetext on root and the width style on Fill"
+    },
+    "attrProps": {
+      "isIndeterminate": {
+        "values": [
+          true,
+          false
+        ],
+        "default": false,
+        "attr": "aria-valuenow",
+        "target": "Root",
+        "note": "INVERTED: CSS keys on the attribute being ABSENT. isIndeterminate=true means omit aria-valuenow (and aria-valuetext) on Root and omit the inline width on Fill; false means aria-valuenow=<value> present."
+      }
+    }
+  },
+  "ProgressCircle": {
+    "notes": "Root: div data-slot=\"progress-circle\", role=\"progressbar\", aria-valuenow, aria-valuemin (0), aria-valuemax (100), aria-valuetext (e.g. \"60%\"), aria-label (there is no label/output part; root is inline-flex). Children: svg.progress-circle__track (the Track part IS the svg; data-slot=\"progress-circle-track\" fill=\"none\" viewBox=\"0 0 36 36\") containing circle.progress-circle__track-circle (data-slot=\"progress-circle-track-circle\" cx=\"18\" cy=\"18\" r=\"16\" stroke-width=\"4\") and circle.progress-circle__fill-circle (data-slot=\"progress-circle-fill-circle\" cx=\"18\" cy=\"18\" r=\"16\" stroke-width=\"4\" stroke-linecap=\"round\" transform=\"rotate(-90 18 18)\" stroke-dasharray=C stroke-dashoffset=OFF). Constants in progress-circle.js: STROKE_WIDTH=4, CENTER=18, RADIUS=CENTER-STROKE_WIDTH/2=16, C=2*PI*16=100.53096491487338. OFF = C - pct/100*C = C*(1-pct/100), pct=(clamp(value,min,max)-min)/(max-min)*100. OFF examples: 0%=100.53096491487338, 25%=75.39822368615503, 50%=50.26548245743669, 60%=40.21238596594935, 75%=25.132741228718345, 100%=0. These are SVG attributes, not inline style or CSS vars. Stroke colours come from CSS vars --progress-circle-stroke / --progress-circle-track-stroke (set by progress-circle--<color>), so the circles need no stroke attribute. Size is set on the svg (md 28px, sm 20px, lg 36px). dashoffset animates 300ms. Indeterminate = ABSENCE of aria-valuenow: CSS .progress-circle:not([aria-valuenow]) .progress-circle__track spins the whole svg (progress-circle-spin 1s linear infinite) and React sets fill-circle dashoffset=C*0.75=75.39822368615503 (a quarter arc); omit aria-valuenow and aria-valuetext. Determinate must keep aria-valuenow. Disabled: data-disabled=\"true\" or aria-disabled=\"true\" on root (CSS-only hook).",
+    "propTargets": {
+      "value": "FillCircle (stroke-dashoffset attribute) and Root (aria-valuenow/aria-valuetext)",
+      "minValue": "Root (aria-valuemin; used in pct formula)",
+      "maxValue": "Root (aria-valuemax; used in pct formula)",
+      "isIndeterminate": "Root prop; effect is omitting aria-valuenow on root and setting FillCircle stroke-dashoffset to C*0.75"
+    },
+    "attrProps": {
+      "isIndeterminate": {
+        "values": [
+          true,
+          false
+        ],
+        "default": false,
+        "attr": "aria-valuenow",
+        "target": "Root",
+        "note": "INVERTED: CSS keys on the attribute being ABSENT (.progress-circle:not([aria-valuenow]) spins the Track svg). isIndeterminate=true means omit aria-valuenow on Root and use stroke-dashoffset=75.39822368615503 on FillCircle."
+      }
+    }
+  },
+  "ScrollShadow": {
+    "notes": "Single div, no parts or injected children. React sets on the root: data-slot=\"scroll-shadow\", data-orientation=<orientation>, data-scroll-shadow-size=<size> and inline style --scroll-shadow-size:<size>px (default size 40; CSS also defaults the var to 40px, so inline style is only needed when size is not 40). CSS selects none of data-slot, data-orientation, data-scroll-shadow-size (orientation comes from the scroll-shadow--vertical/--horizontal class). The fade is driven only by these attributes, set at runtime by JS via dataset (useScrollShadow: scroll listener + ResizeObserver, in requestAnimationFrame) and matched by CSS ONLY when the value is the string \"true\": vertical: data-top-scroll (fade on the TOP edge = content hidden above), data-bottom-scroll (fade on the BOTTOM edge = more content below), data-top-bottom-scroll (both); horizontal: data-left-scroll, data-right-scroll, data-left-right-scroll. JS writes top/bottom as \"true\"|\"false\" strings, or only data-top-bottom-scroll=\"true\" (deleting the other two) when both apply. Static mock: hard-code ONE attribute, no JS. Scrolled to start with more after: data-bottom-scroll=\"true\" (vertical) / data-right-scroll=\"true\" (horizontal); mid-scroll: data-top-bottom-scroll=\"true\" / data-left-right-scroll=\"true\"; at the end: data-top-scroll=\"true\" / data-left-scroll=\"true\"; no fade: omit all. The fade is a CSS mask, so it renders without real overflow and never updates on scroll in static HTML. CSS gives only position:relative and overflow-y:auto (vertical) / overflow-x:auto (horizontal): the author must constrain height/max-height (vertical) or width/max-width (horizontal) so it scrolls. Scrollbar is excluded from the mask (--scroll-shadow-scrollbar-size 10px; scroll-shadow--hide-scrollbar sets 0px and hides it). React-only props with no CSS effect: isEnabled (default true; disables only the auto JS), offset (px, default 0), onVisibilityChange. visibility (default \"auto\") \"top\"|\"bottom\"|\"left\"|\"right\"|\"both\"|\"none\" bypasses JS and forces the attributes (\"both\" = data-top-bottom-scroll for vertical, data-left-right-scroll for horizontal).",
+    "propTargets": {
+      "size": "Root inline style --scroll-shadow-size:<n>px (plus data-scroll-shadow-size=<n>, unused by CSS)",
+      "visibility": "Root dataset attributes data-*-scroll (set by JS or forced by prop)",
+      "offset": "JS threshold only (px); no DOM output",
+      "isEnabled": "JS only; false disables the auto-mode scroll listener (no DOM output)"
+    },
+    "attrProps": {
+      "visibility": {
+        "values": [
+          "auto",
+          "top",
+          "bottom",
+          "left",
+          "right",
+          "both",
+          "none"
+        ],
+        "default": "auto",
+        "attr": "data-top-scroll | data-bottom-scroll | data-top-bottom-scroll (vertical); data-left-scroll | data-right-scroll | data-left-right-scroll (horizontal)",
+        "target": "Root",
+        "valueMap": {
+          "top": {
+            "data-top-scroll": "true"
+          },
+          "bottom": {
+            "data-bottom-scroll": "true"
+          },
+          "left": {
+            "data-left-scroll": "true"
+          },
+          "right": {
+            "data-right-scroll": "true"
+          },
+          "both": {
+            "data-top-bottom-scroll": "true (vertical)",
+            "data-left-right-scroll": "true (horizontal)"
+          },
+          "none": {},
+          "auto": "JS decides at runtime"
+        },
+        "note": "Multi-attribute mapping: one prop value maps to a different data-* attribute depending on orientation; attribute value must be the string true."
+      }
+    },
+    "openQuestions": "ScrollShadow.visibility does not fit the single-attr shape of attrProps; see valueMap. Semantics of top/bottom/left/right were derived from the CSS gradients (top-scroll = 0deg gradient fading the top edge; left-scroll = 270deg fading the left edge), not from a render."
+  },
+  "Separator": {
+    "notes": "Single element, no children. React resolves orientation = prop ?? SeparatorContext.orientation (Toolbar sets the OPPOSITE axis) ?? \"horizontal\", and always emits class separator + separator--<orientation> + separator--<variant> (variant default \"default\" so separator--default is always present), data-slot=\"separator\", data-orientation=<orientation>. RAC element/attrs: horizontal renders <hr role=\"separator\"> (role is always set because the elementType prop is unset; no aria-orientation); vertical renders <div role=\"separator\" aria-orientation=\"vertical\"> (hr is swapped for div). Static: use hr for horizontal, div for vertical. Sizing: horizontal h-px w-full; vertical w-px, self-stretch, min-h-2 (needs a flex/grid parent with height). Inside .toolbar the rules .toolbar .separator--vertical (height 50%) and .separator--horizontal (width 50%) apply, so the orientation class must match the perpendicular axis (see Toolbar). Other components select it by attribute, so keep data-slot=\"separator\" (and data-orientation) when used inside them: .list-box [data-slot=separator][data-orientation=horizontal], .dropdown__menu [data-slot=separator], .menu [data-slot=separator] (width:94%; margin-left:3%). separator__container, separator__container--horizontal/--vertical, separator__line, separator__content, separator__content--horizontal/--vertical exist only in CSS: React never emits them (absent from @heroui/react dist) and Separator renders no content. A labelled divider (flex container > line + content + line) is therefore a CSS-only pattern whose intended markup is unverified.",
+    "propTargets": {
+      "orientation": "Root (class separator--<o>, data-orientation, and element tag/role: hr vs div role=separator aria-orientation=vertical); defaults from SeparatorContext when inside Toolbar"
+    }
+  },
+  "Skeleton": {
+    "notes": "Single div; React emits no data-slot, no role and no aria attributes, and no children. Classes: skeleton + skeleton--<animationType>. animationType default: when the prop is undefined React reads the CSS var --skeleton-animation from :root (HeroUI theme sets it to shimmer) and falls back to the tv default shimmer; \"none\" emits skeleton--none (inert). Static HTML must write the modifier class explicitly. No intrinsic size: the author must size/shape it (width, height, rounded-*) with extra classes or inline style. Shimmer is an ::after bar (keyframes \"skeleton\": translateX -100% to 200%, 2s linear infinite, defined in heroui.min.css); pulse uses animation:var(--animate-pulse) (opacity); both are disabled by prefers-reduced-motion and an ancestor [data-reduce-motion=true]. Group shimmer is pure CSS and works statically: a .skeleton--shimmer element that contains .skeleton descendants (:has(.skeleton)) drops its own ::after, draws a single ::before overlay sweeping the whole container, and suppresses the children ::after. So wrap placeholders in div.skeleton.skeleton--shimmer with child div.skeleton elements. (The source CSS carries a TODO: \"Skeleton with parent are not visible\".)",
+    "propTargets": {
+      "animationType": "Root (class skeleton--<type>; default read from :root CSS var --skeleton-animation, not a data attribute)"
+    }
+  },
+  "Spinner": {
+    "notes": "Root is <span class=\"spinner spinner--<color> spinner--<size>\" data-slot=\"spinner\"> with no role/aria on the span; the rotation (spin .75s linear infinite, off under reduced motion) is on the span itself, and colour is the span text colour (spinner--<color> sets color; the svg uses currentColor; \"current\" = inherit). Injected child you must write: <svg data-slot=\"spinner-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" aria-label=\"Loading\" role=\"presentation\"> with NO width/height attributes; it fills the span, whose size is 16px sm, 24px md, 32px lg, 40px xl (svg fill-the-span layout inferred, no spinner svg CSS exists outside Toast). Svg content: <defs> with linearGradient id=G1 (x1=50% x2=50% y1=5.271% y2=91.793%; stops: offset 0% stop-color=currentColor; offset 100% stop-color=currentColor stop-opacity=.55) and linearGradient id=G2 (x1=50% x2=50% y1=15.24% y2=87.15%; stops: 0% currentColor stop-opacity=0; 100% currentColor stop-opacity=.55); then <g fill=\"none\"> with <path fill=\"url(#G1)\" transform=\"translate(1.5 1.625)\" d=\"M8.749.021a1.5 1.5 0 0 1 .497 2.958A7.5 7.5 0 0 0 3 10.375a7.5 7.5 0 0 0 7.5 7.5v3c-5.799 0-10.5-4.7-10.5-10.5C0 5.23 3.726.865 8.749.021\"/> and <path fill=\"url(#G2)\" transform=\"translate(1.5 1.625)\" d=\"M15.392 2.673a1.5 1.5 0 0 1 2.119-.115A10.48 10.48 0 0 1 21 10.375c0 5.8-4.701 10.5-10.5 10.5v-3a7.5 7.5 0 0 0 5.007-13.084a1.5 1.5 0 0 1-.115-2.118\"/>. React also emits a third fill-less path (invisible); omit it. Gradient ids are generated per instance by React useId; in static HTML give each spinner its own unique G1/G2 ids. Keep data-slot=\"spinner\" (span) and data-slot=\"spinner-icon\" (svg): CSS keys on them in other components (.button svg:not([data-slot=spinner] svg) exempts spinners from button icon sizing; .toast__indicator [data-slot=spinner], [data-slot=spinner-icon] sets 16px).",
+    "propTargets": {}
+  },
+  "EmptyState": {
+    "notes": "Minimal static markup: <div class=\"empty-state\" data-slot=\"empty-state\">No results found</div>. React renders a plain div (no role/aria, no parts, no variants, no state); when children is falsy it renders the default text \"No results found\", so write the text by hand. Base CSS gives p-2 text-sm text-muted. data-slot=\"empty-state\" is used by CSS only as a context override: .autocomplete__popover [data-slot=empty-state] (text-center, text-sm, overlay-foreground at 60% opacity), so keep the attribute when the element sits inside an autocomplete popover. No HeroUI component in @heroui/react dist imports EmptyState; the autocomplete override suggests it is meant for renderEmptyState in collection components (inference, unverified).",
+    "propTargets": {}
+  },
+  "Toolbar": {
+    "notes": "Root: <div class=\"toolbar toolbar--<orientation>\" data-slot=\"toolbar\"> with RAC attributes role=\"toolbar\" (becomes role=\"group\" when nested inside another [role=toolbar]), aria-orientation=<orientation>, data-orientation=<orientation> (not selected by CSS; layout comes from the toolbar--vertical class) and aria-label or aria-labelledby (provide one). toolbar--horizontal is always emitted but has an empty rule. isAttached only adds toolbar--attached (rounded-3xl bg-surface p-1 shadow-overlay); no attribute. Layout is plain CSS grid (grid-flow-col, gap-2, w-fit; vertical = grid-flow-row); children are ordinary elements. Roving arrow-key navigation (Left/Right or Up/Down) is runtime-only. Context React provides to children, which the author must replicate by hand: (1) ToggleButtonGroupContext {orientation}: a ToggleButtonGroup without its own orientation prop inherits the toolbar orientation, so write toggle-button-group--horizontal|--vertical and data-orientation on the group to match the toolbar; (2) SeparatorContext {orientation: OPPOSITE of the toolbar}: a Separator without orientation is vertical in a horizontal toolbar and horizontal in a vertical one, so write class \"separator separator--vertical\" (div role=\"separator\" aria-orientation=\"vertical\" data-orientation=\"vertical\" data-slot=\"separator\") in a horizontal toolbar, or \"separator separator--horizontal\" (hr data-orientation=\"horizontal\") in a vertical toolbar. CSS that depends on these: .toolbar .separator--vertical {height:50%; align-self:center}, .toolbar .separator--horizontal {width:50%; justify-self:center}, .toolbar--vertical .button-group {justify-content:flex-start}.",
+    "propTargets": {
+      "orientation": "Root (class toolbar--<o>, aria-orientation, data-orientation); cascades to ToggleButtonGroup via RAC ToggleButtonGroupContext and its opposite axis cascades to Separator via SeparatorContext"
+    },
+    "openQuestions": "Whether ButtonGroup (not ToggleButtonGroup) inside Toolbar also inherits orientation was not checked; only ToggleButtonGroupContext and SeparatorContext are provided by ToolbarRoot."
+  },
+  "Typography": {
+    "notes": "Root renders RAC Text with the tag chosen by type (React elementType map): body, body-sm, body-xs -> p; code -> code; h1..h6 -> h1..h6. Attributes: data-slot=\"typography\", data-type=<type> (no Typography CSS selects data-type). Classes ALWAYS emitted: typography + typography--<type> (default body) + typography--align-<align> (default start) + typography--color-<color> (default default). typography--weight-* is emitted only when weight is set (no default); typography--truncate only when truncate=true (block + overflow hidden + ellipsis + nowrap, so it needs a constrained width). Sub-components are presets of the same root, not separate CSS: Typography.Heading level=1..6 (default 1) -> type h<level>, tag h<level>; Typography.Paragraph size=base|sm|xs (default base) -> type body|body-sm|body-xs, tag p; Typography.Code -> type code, tag code (typography--code = bg-default rounded-md px-1.5 py-0.5 font-mono text-sm). They all accept the root props align, color, weight, truncate; Heading.level and Paragraph.size are aliases that resolve to type. Typography.Prose is different: <div class=\"typography-prose\" data-slot=\"prose\"> (no typography class, no variant props, no typography--* classes apply); it styles descendant plain HTML tags by element selector (h1-h6, p, code, a, blockquote, ul, ol, li, hr, pre, strong, em, img), so its children must be raw semantic tags, not typography classes. color only has default (--foreground) and muted (--muted).",
+    "propTargets": {
+      "type": "Root (class typography--<type> and element tag); Heading.level -> h<level>, Paragraph.size -> body|body-sm|body-xs, Code -> code are preset aliases of this prop"
+    },
+    "openQuestions": "Parts Code/Heading/Paragraph map to base class typography and Prose to typography-prose in the generator draft; this is correct for the base class but the real class set depends on the preset type (see notes), so no partFixes given."
+  }
+}

@@ -1,0 +1,26 @@
+/* ── iOS PREVIEW CHROME: the phone around each Screen (never translated to code) */
+.pv-frame { position: relative; isolation: isolate; overflow: hidden; width: var(--device-w, 393px); height: 852px; border-radius: 47px; background: var(--background); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 24px 60px -20px rgba(0, 0, 0, 0.35); --safe-top: 59px; --safe-bottom: 34px; }
+.pv-scene { position: absolute; inset: 0; }
+.pv-frame[data-tabbar] .pv-scene { bottom: 83px; }
+/* Sheets are portalled above the tab bar in the app. */
+.pv-frame[data-tabbar] .pv-scene > [data-hero="BottomSheet"] { bottom: -83px; }
+.pv-statusbar { position: absolute; top: 0; right: 0; left: 0; z-index: 60; height: var(--safe-top); color: var(--foreground); pointer-events: none; font: 600 17px/22px -apple-system, system-ui, sans-serif; }
+.pv-statusbar[data-style="light"] { color: #fff; }
+.pv-statusbar .pv-time { position: absolute; top: 20px; left: 0; width: 132px; text-align: center; }
+.pv-statusbar .pv-island { position: absolute; top: 11px; left: 50%; width: 126px; height: 37px; margin-left: -63px; border-radius: 20px; background: #000; }
+.pv-statusbar .pv-right { position: absolute; top: 25px; right: 34px; display: flex; align-items: center; gap: 6px; }
+.pv-statusbar .pv-bars { width: 18px; height: 12px; background: currentColor; -webkit-mask: linear-gradient(90deg, #000 3px, transparent 3px 5px, #000 5px 8px, transparent 8px 10px, #000 10px 13px, transparent 13px 15px, #000 15px); mask: linear-gradient(90deg, #000 3px, transparent 3px 5px, #000 5px 8px, transparent 8px 10px, #000 10px 13px, transparent 13px 15px, #000 15px); clip-path: polygon(0 60%, 100% 0, 100% 100%, 0 100%); }
+.pv-statusbar .pv-batt { box-sizing: border-box; width: 26px; height: 13px; padding: 2px; border: 1px solid color-mix(in srgb, currentColor 40%, transparent); border-radius: 4px; }
+.pv-statusbar .pv-batt::before { content: ""; display: block; height: 100%; border-radius: 2px; background: currentColor; }
+.pv-home { position: absolute; bottom: 8px; left: 50%; z-index: 61; width: 139px; height: 5px; margin-left: -69.5px; border-radius: 3px; background: var(--foreground); pointer-events: none; }
+.pv-tabbar { position: absolute; right: 0; bottom: 0; left: 0; z-index: 30; display: flex; box-sizing: border-box; height: 83px; padding: 4px 20px 0; border-top: 0.5px solid var(--border); background: var(--surface); }
+.pv-tab { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; height: 45px; }
+.pv-tab i { width: 24px; height: 24px; background: var(--foreground); opacity: 0.3; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+.pv-tab span { margin-top: 2px; color: var(--muted); font: 400 12px/16px -apple-system, system-ui, sans-serif; }
+.pv-tab[aria-current] i { opacity: 1; }
+.pv-tab[aria-current] span { color: var(--foreground); }
+/* flat mode: the whole scroll content, no inner scrolling */
+html[data-mode="flat"] .pv-frame { display: flex; flex-direction: column; height: auto; min-height: 852px; }
+html[data-mode="flat"] .pv-frame .pv-scene { position: relative; inset: auto; flex: 1 0 auto; }
+html[data-mode="flat"] .pv-tabbar { position: relative; flex-shrink: 0; }
+html[data-mode="flat"] .pv-scene [data-scroll]:not([data-scroll="x"]) { flex: 0 0 auto; overflow: visible; }

@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-mode="device">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feature name · Web</title>
+
+{{KIT}}
+
+<!-- Motion sheet: this file's own animations. Only @keyframes; colours as tokens.
+     Apply with data-anim="name 600ms ease-out 200ms both". -->
+<style data-motion-sheet>
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<!-- Feature styles: Tailwind @apply and custom CSS for Custom components. Colours,
+     shadows, radii and fonts are tokens here too (var(--accent), shadow-surface …). -->
+<style type="text/tailwindcss" data-feature-styles>
+</style>
+</head>
+<body>
+
+<!-- HANDOFF NOTES
+Custom components:
+- none
+Needs HeroUI Pro:
+- none
+Not designed yet:
+- none
+Animation losses:
+- none
+Open questions:
+- none
+-->
+
+<!-- ═══ NAVIGATION ════════════════════════════════════════════════════════════
+     One block per Layout, copied from frontend-alpha. Edit it when the design
+     changes the Navigation; delete the Layouts this feature doesn't use.
+     A Screen picks its Layout and fills the per-Screen parts:
+       data-layout="app | profile | registration | none"
+       data-nav="<data-nav-item>"   the current sidebar / tab bar / settings item
+       data-title="…"               breadcrumb and mobile title
+       data-step="2"                registration: the active step
+       data-tabbar="hidden"         app: no mobile tab bar on this Screen
+     The Screen's content goes where data-outlet is. -->
+<template data-layout="app">
+  <div class="flex min-h-(--je-frame-h) w-full">
+
+    <!-- Sidebar (desktop). The current section is the item with. -->
+    <aside aria-label="Main navigation" class="sticky top-0 hidden h-(--je-frame-h) w-60 shrink-0 flex-col border-e border-separator bg-background md:flex">
+      <div class="flex flex-col gap-2 px-4 pt-4 pb-2">
+        <div class="flex min-h-9 items-center px-2">
+          <svg role="img" aria-label="JobEscape" class="h-6 w-25 shrink-0 text-foreground" width="100" height="24" viewBox="0 0 100 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 6C0 2.68629 2.68629 0 6 0H18C21.3137 0 24 2.68629 24 6V18C24 21.3137 21.3137 24 18 24H6C2.68629 24 0 21.3137 0 18V6Z" fill="#2563EB"/>
+          <path d="M0 6C0 2.68629 2.68629 0 6 0H18C21.3137 0 24 2.68629 24 6V18C24 21.3137 21.3137 24 18 24H6C2.68629 24 0 21.3137 0 18V6Z" fill="url(#paint0_linear_2249_40261)"/>
+          <path d="M11.5757 3.68825C11.0101 3.74766 10.4634 3.92528 9.97085 4.2096L6.26818 6.34736C5.01267 7.07224 4.23925 8.41186 4.23926 9.8616V11.3304C4.23926 11.404 4.2587 11.4763 4.29562 11.54C4.33254 11.6036 4.38562 11.6564 4.4495 11.693C4.51338 11.7295 4.58578 11.7486 4.65939 11.7482C4.73299 11.7477 4.80517 11.7279 4.86863 11.6906L9.04994 9.23453C9.07747 9.21343 9.10552 9.19303 9.13404 9.17336L10.2965 8.50227L10.3134 8.4923L10.9854 8.10453C11.6131 7.7421 12.3866 7.7421 13.0143 8.10453L13.7869 8.55053C13.8503 8.58714 13.9222 8.60641 13.9955 8.60641C14.0687 8.60641 14.1406 8.58713 14.2041 8.55052C14.2675 8.5139 14.3201 8.46124 14.3567 8.39782C14.3934 8.3344 14.4126 8.26245 14.4126 8.18922V4.67724C14.4126 4.60245 14.3929 4.52896 14.3555 4.46419C14.3181 4.39941 14.2644 4.34562 14.1996 4.30822L14.0287 4.2096C13.2866 3.78117 12.4279 3.59868 11.5757 3.68825ZM15.8769 5.99837V10.8234C15.8792 10.8591 15.8803 10.8948 15.8803 10.9305V13.0683C15.8803 13.7932 15.4936 14.463 14.8658 14.8254L13.0145 15.8943C12.3867 16.2567 11.6133 16.2567 10.9855 15.8943L9.1342 14.8254C8.50644 14.463 8.11971 13.7932 8.11969 13.0683V12.2073C8.11969 12.1339 8.10029 12.0617 8.06346 11.9982C8.02664 11.9347 7.97368 11.8821 7.90997 11.8456C7.84625 11.8091 7.77404 11.7902 7.70062 11.7906C7.62721 11.791 7.55521 11.8108 7.49191 11.848L4.44473 13.638C4.38223 13.6747 4.33039 13.7271 4.29438 13.79C4.25837 13.8529 4.23942 13.9242 4.23942 13.9967V14.1371C4.23942 15.5869 5.01284 16.9265 6.26835 17.6514L9.97101 19.7891C11.2265 20.514 12.7734 20.514 14.0289 19.7891L17.7316 17.6514C18.9872 16.9265 19.7606 15.5869 19.7606 14.1371V9.8616C19.7606 8.41186 18.9872 7.07224 17.7316 6.34736L16.502 5.63747C16.4387 5.6009 16.3668 5.58165 16.2936 5.58165C16.2205 5.58165 16.1486 5.60091 16.0853 5.63748C16.0219 5.67406 15.9693 5.72667 15.9328 5.79001C15.8962 5.85336 15.8769 5.92522 15.8769 5.99837Z" fill="#FCFCFC"/>
+          <path d="M96.0816 17.1842C93.6919 17.1842 92.0889 15.3476 92.0889 13.0896C92.0889 10.8315 93.7661 8.96484 96.0816 8.96484C98.3971 8.96484 100 10.8315 100 13.0896C100 13.3154 99.9853 13.5562 99.9408 13.8122H94.1669C94.3895 14.7304 95.0723 15.3778 96.0816 15.3778C96.9425 15.3778 97.6104 14.9261 97.9666 14.324L99.5251 15.5132C98.9017 16.4917 97.6104 17.1842 96.0816 17.1842ZM94.1669 12.2917H97.9815C97.7588 11.4186 97.0315 10.7111 96.0519 10.7111C95.102 10.7111 94.3895 11.3584 94.1669 12.2917Z" fill="currentColor"/>
+          <path d="M83.312 20.0004V9.16169H85.2861V10.4262C85.7017 9.56814 86.3993 8.99609 87.75 8.99609C89.8726 8.99609 91.5646 10.8477 91.5646 13.1058C91.5646 15.3638 89.8726 17.1853 87.75 17.1853C86.429 17.1853 85.7314 16.6434 85.3158 15.8305V20.0004H83.312ZM85.2564 13.1058C85.2564 14.3251 86.1025 15.3488 87.4235 15.3488C88.7 15.3488 89.5609 14.28 89.5609 13.0907C89.5609 11.8714 88.7 10.8327 87.4235 10.8327C86.1025 10.8327 85.2564 11.8864 85.2564 13.1058Z" fill="currentColor"/>
+          <path d="M77.6833 17.1854C75.5607 17.1854 73.8687 15.3638 73.8687 13.1058C73.8687 10.8477 75.5607 8.99609 77.6833 8.99609C79.0191 8.99609 79.7167 9.55308 80.1323 10.3961V9.16169H82.1213V16.9897H80.1769V15.7101C79.7613 16.5983 79.0637 17.1854 77.6833 17.1854ZM75.8724 13.0907C75.8724 14.28 76.7333 15.3488 78.0098 15.3488C79.3308 15.3488 80.1769 14.3251 80.1769 13.1058C80.1769 11.8864 79.3308 10.8327 78.0098 10.8327C76.7333 10.8327 75.8724 11.8714 75.8724 13.0907Z" fill="currentColor"/>
+          <path d="M70.5555 17.1845C68.3439 17.1845 66.5776 15.3479 66.5776 13.0748C66.5776 10.8017 68.2994 8.9802 70.6594 8.96514C72.0695 8.95009 73.2124 9.50708 73.8655 10.4254L72.3218 11.7049C71.9656 11.163 71.3719 10.8168 70.6891 10.8168C69.4126 10.8168 68.5814 11.8555 68.5814 13.0748C68.5814 14.2942 69.4572 15.3329 70.7336 15.3329C71.5055 15.3329 72.0101 14.9415 72.4109 14.3996L73.8655 15.6791C73.1382 16.6275 72.0695 17.1845 70.5555 17.1845Z" fill="currentColor"/>
+          <path d="M63.0952 17.1842C61.789 17.1842 60.7352 16.7326 59.8892 15.8143L61.2399 14.5648C61.8039 15.2122 62.3976 15.5283 63.0507 15.5283C63.7335 15.5283 64.1194 15.1821 64.1194 14.7154C64.1194 14.3089 63.9264 14.0831 62.7093 13.7971C60.6461 13.3003 60.3344 12.3519 60.3344 11.3584C60.3344 9.9885 61.4031 8.96484 63.214 8.96484C64.4608 8.96484 65.292 9.28097 66.0786 10.3197L64.624 11.4487C64.253 10.8466 63.778 10.6057 63.2585 10.6057C62.7093 10.6057 62.2937 10.8165 62.2937 11.2982C62.2937 11.5691 62.4124 11.81 63.3327 12.0509C65.574 12.638 66.0935 13.481 66.0935 14.6552C66.0935 16.1003 64.8022 17.1842 63.0952 17.1842Z" fill="currentColor"/>
+          <path d="M55.8721 17.1842C53.4824 17.1842 51.8794 15.3476 51.8794 13.0896C51.8794 10.8315 53.5566 8.96484 55.8721 8.96484C58.1876 8.96484 59.7906 10.8315 59.7906 13.0896C59.7906 13.3154 59.7758 13.5562 59.7313 13.8122H53.9574C54.18 14.7304 54.8628 15.3778 55.8721 15.3778C56.733 15.3778 57.4009 14.9261 57.7572 14.324L59.3157 15.5132C58.6923 16.4917 57.4009 17.1842 55.8721 17.1842ZM53.9574 12.2917H57.772C57.5494 11.4186 56.8221 10.7111 55.8424 10.7111C54.8925 10.7111 54.18 11.3584 53.9574 12.2917Z" fill="currentColor"/>
+          <path d="M47.5406 17.185C46.1602 17.185 45.4626 16.5979 45.047 15.7097V16.9893H43.1025V6H45.1063V10.3656C45.5219 9.53764 46.2195 8.9957 47.5406 8.9957C49.6631 8.9957 51.3552 10.8473 51.3552 13.1054C51.3552 15.3635 49.6631 17.185 47.5406 17.185ZM45.047 13.1054C45.047 14.3247 45.893 15.3484 47.214 15.3484C48.4905 15.3484 49.3514 14.2796 49.3514 13.0903C49.3514 11.871 48.4905 10.8323 47.214 10.8323C45.893 10.8323 45.047 11.886 45.047 13.1054Z" fill="currentColor"/>
+          <path d="M38.1042 17.1848C35.7145 17.1848 33.9927 15.3482 33.9927 13.0901C33.9927 10.8321 35.7145 8.98047 38.1042 8.98047C40.4939 8.98047 42.2156 10.8321 42.2156 13.0901C42.2156 15.3482 40.4939 17.1848 38.1042 17.1848ZM35.9965 13.0901C35.9965 14.3095 36.8277 15.3332 38.1042 15.3332C39.3806 15.3332 40.2118 14.3095 40.2118 13.0901C40.2118 11.8708 39.3806 10.8321 38.1042 10.8321C36.8277 10.8321 35.9965 11.8708 35.9965 13.0901Z" fill="currentColor"/>
+          <path d="M30.0186 17.1544C29.2023 17.1544 28.4156 17.0039 28 16.748L28.7867 15.0168C28.9945 15.1673 29.3359 15.2576 29.7366 15.2576C30.4342 15.2576 30.9537 14.9415 30.9537 14.1135V6.45117H33.0317V14.1888C33.0317 16.2361 31.7552 17.1544 30.0186 17.1544Z" fill="currentColor"/>
+          <defs>
+          <linearGradient id="paint0_linear_2249_40261" x1="12" y1="0" x2="12" y2="24" gradientUnits="userSpaceOnUse">
+          <stop stop-color="white" stop-opacity="0.25"/>
+          <stop offset="1" stop-color="white" stop-opacity="0"/>
+          </linearGradient>
+          </defs>
+          </svg>
+        </div>
+      </div>
+      <nav class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-3">
+        <div class="flex flex-col gap-0.5">
+          <a href="#" data-nav-item="personal-plan" data-press="tab:personal-plan" class="group flex w-full items-center text-foreground">
+            <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default group-aria-[current=page]:bg-default">
+              <span class="flex size-5 shrink-0 items-center justify-center text-muted group-aria-[current=page]:text-foreground"><i data-icon="route" class="size-4"></i></span>
+              <span class="flex-1 truncate text-sm group-aria-[current=page]:font-medium">Personal Plan</span>
+            </span>
+          </a>
+          <a href="#" data-nav-item="challenges" data-press="tab:challenges" class="group flex w-full items-center text-foreground">
+            <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default group-aria-[current=page]:bg-default">
+              <span class="flex size-5 shrink-0 items-center justify-center text-muted group-aria-[current=page]:text-foreground"><i data-icon="star" class="size-4"></i></span>
+              <span class="flex-1 truncate text-sm group-aria-[current=page]:font-medium">Challenges</span>
+            </span>
+          </a>
+          <a href="#" data-nav-item="apps" data-press="tab:apps" class="group flex w-full items-center text-foreground">
+            <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default group-aria-[current=page]:bg-default">
+              <span class="flex size-5 shrink-0 items-center justify-center text-muted group-aria-[current=page]:text-foreground"><i data-icon="rectangles-4" class="size-4"></i></span>
+              <span class="flex-1 truncate text-sm group-aria-[current=page]:font-medium">Apps</span>
+            </span>
+          </a>
+        </div>
+
+        <div class="my-2 h-px bg-separator"></div>
+
+        <details open class="group/ai">
+          <summary class="group flex w-full cursor-pointer list-none items-center text-foreground [&::-webkit-details-marker]:hidden">
+            <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default">
+              <span class="flex size-5 shrink-0 items-center justify-center text-muted"><i data-icon="magic-wand" class="size-4"></i></span>
+              <span class="flex-1 truncate text-sm">AI tools</span>
+              <i data-icon="chevron-right" class="size-3.5 text-muted transition-[rotate] group-open/ai:rotate-90"></i>
+            </span>
+          </summary>
+          <div class="mt-0.5 flex flex-col gap-0.5 ps-4">
+            <a href="#" data-nav-item="chat" data-press="tab:chat" class="group flex w-full items-center text-foreground">
+              <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default group-aria-[current=page]:bg-default">
+                <span class="flex size-5 shrink-0 items-center justify-center text-muted group-aria-[current=page]:text-foreground"><i data-icon="comment" class="size-4"></i></span>
+                <span class="flex-1 truncate text-sm group-aria-[current=page]:font-medium">Chat</span>
+              </span>
+            </a>
+            <a href="#" data-nav-item="assistants" data-press="tab:assistants" class="group flex w-full items-center text-foreground">
+              <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default group-aria-[current=page]:bg-default">
+                <span class="flex size-5 shrink-0 items-center justify-center text-muted group-aria-[current=page]:text-foreground"><i data-icon="face-robot" class="size-4"></i></span>
+                <span class="flex-1 truncate text-sm group-aria-[current=page]:font-medium">Assistants</span>
+              </span>
+            </a>
+            <a href="#" data-nav-item="automation" data-press="tab:automation" class="group flex w-full items-center text-foreground">
+              <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default group-aria-[current=page]:bg-default">
+                <span class="flex size-5 shrink-0 items-center justify-center text-muted group-aria-[current=page]:text-foreground"><i data-icon="magic-wand" class="size-4"></i></span>
+                <span class="flex-1 truncate text-sm group-aria-[current=page]:font-medium">Automation</span>
+              </span>
+            </a>
+          </div>
+        </details>
+
+        <div class="mt-2 flex flex-col gap-0.5">
+          <a href="#" data-nav-item="prompts-library" data-press="tab:prompts-library" class="group flex w-full items-center text-foreground">
+            <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default group-aria-[current=page]:bg-default">
+              <span class="flex size-5 shrink-0 items-center justify-center text-muted group-aria-[current=page]:text-foreground"><i data-icon="book-open" class="size-4"></i></span>
+              <span class="flex-1 truncate text-sm group-aria-[current=page]:font-medium">Prompts library</span>
+            </span>
+          </a>
+        </div>
+      </nav>
+      <div class="flex flex-col gap-1 px-3 pt-2 pb-4">
+        <button type="button" class="group flex w-full items-center text-start text-foreground">
+          <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default">
+            <span class="flex size-5 shrink-0 items-center justify-center text-muted"><i data-icon="circle-question" class="size-4"></i></span>
+            <span class="flex-1 truncate text-sm">Help &amp; Information</span>
+          </span>
+        </button>
+        <button type="button" class="group flex w-full items-center text-start text-danger-soft-foreground">
+          <span class="flex min-h-9 w-full min-w-0 items-center gap-3 rounded-2xl px-2 py-1.5 group-hover:bg-default">
+            <span class="flex size-5 shrink-0 items-center justify-center"><i data-icon="arrow-right-from-square" class="size-4"></i></span>
+            <span class="flex-1 truncate text-sm">Log out</span>
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="flex min-w-0 flex-1 flex-col bg-background">
+
+      <!-- Top bar (desktop): breadcrumbs, streak, name and avatar. -->
+      <header class="sticky top-0 z-40 hidden h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-background px-4 py-3.5 md:flex md:px-5">
+        <div class="min-w-0 flex-1">
+          <ol aria-label="Breadcrumb" data-hero="Breadcrumbs" class="min-w-0">
+            <li data-slot="item" class="font-medium"><span data-slot="link" data-current="true" data-title-slot>Personal Plan</span></li>
+          </ol>
+        </div>
+        <div class="flex min-w-0 shrink-0 items-center gap-2.5">
+          <button type="button" data-hero="Button" data-variant="secondary" data-size="sm" class="shrink-0 shadow-none"><i data-icon="flame" class="size-4"></i><span data-slot="label">3 days</span></button>
+          <span class="inline-flex min-w-0 items-center">
+            <span class="me-2.5 truncate">Dida Smith</span>
+            <button type="button" aria-label="Open user menu" data-hero="Button" data-variant="tertiary" data-icon-only class="size-10 rounded-full p-0">
+              <span data-hero="Avatar" class="size-9 shrink-0 overflow-hidden rounded-full"><span data-slot="fallback" class="rounded-full bg-surface text-xs font-semibold text-foreground">DS</span></span>
+            </button>
+          </span>
+        </div>
+      </header>
+
+      <!-- Top bar (mobile): page title with streak and avatar. -->
+      <header class="flex h-15 shrink-0 items-center justify-between gap-3 bg-background px-4 md:hidden">
+        <h1 data-title-slot class="truncate text-xl leading-7 font-semibold text-foreground">Personal Plan</h1>
+        <div class="flex shrink-0 items-center gap-2">
+          <button type="button" data-hero="Button" data-variant="secondary" data-size="sm" class="shrink-0 shadow-none"><i data-icon="flame" class="size-4"></i><span data-slot="label">3 days</span></button>
+          <span data-hero="Avatar" class="size-9 shrink-0 overflow-hidden rounded-full"><span data-slot="fallback" class="rounded-full bg-surface text-xs font-semibold text-foreground">DS</span></span>
+        </div>
+      </header>
+
+      <main data-outlet class="flex-1 px-4 py-6 md:px-6"></main>
+
+      <!-- Tab bar (mobile). The current tab is the item with. -->
+      <nav data-tabbar aria-label="Main navigation" class="sticky inset-x-0 bottom-0 z-50 block w-full bg-background md:hidden">
+        <div class="border-t border-border">
+          <div class="mx-auto flex h-[73px] max-w-[395px] items-center justify-between px-2 pt-2.5 pb-2">
+            <a href="#" data-nav-item="personal-plan" data-press="tab:personal-plan" class="group flex h-14 max-w-[75px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-1.5">
+              <i data-icon="route" class="size-5 text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100"></i>
+              <span class="text-center text-sm leading-5 font-normal text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100">My plan</span>
+            </a>
+            <a href="#" data-nav-item="challenges" data-press="tab:challenges" class="group flex h-14 max-w-[75px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-1.5">
+              <i data-icon="star" class="size-5 text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100"></i>
+              <span class="text-center text-sm leading-5 font-normal text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100">Challenges</span>
+            </a>
+            <a href="#" data-nav-item="apps" data-press="tab:apps" class="group flex h-14 max-w-[75px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-1.5">
+              <i data-icon="rectangles-4" class="size-5 text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100"></i>
+              <span class="text-center text-sm leading-5 font-normal text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100">Apps</span>
+            </a>
+            <a href="#" data-nav-item="ai-tools" data-press="tab:ai-tools" class="group flex h-14 max-w-[75px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-1.5">
+              <i data-icon="magic-wand" class="size-5 text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100"></i>
+              <span class="text-center text-sm leading-5 font-normal text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100">AI tools</span>
+            </a>
+            <a href="#" data-nav-item="profile" data-press="tab:profile" class="group flex h-14 max-w-[75px] min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-1.5">
+              <i data-icon="person" class="size-5 text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100"></i>
+              <span class="text-center text-sm leading-5 font-normal text-muted opacity-50 group-aria-[current=page]:text-foreground group-aria-[current=page]:opacity-100">Profile</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+</template>
+
+<template data-layout="profile">
+  <div class="min-h-(--je-frame-h) bg-background pb-24 desktop:pb-10">
+
+    <!-- Settings sidebar (desktop). The current section is the item with. -->
+    <aside aria-label="Settings navigation" class="fixed inset-y-0 start-0 z-20 hidden w-60 flex-col border-e border-border bg-background desktop:flex">
+      <div class="px-3 pt-4 pb-2">
+        <a href="#" class="flex h-9 items-center gap-3 rounded-2xl px-2 text-sm text-foreground transition-colors hover:bg-surface-tertiary">
+          <i data-icon="arrow-uturn-ccw-left" class="size-5"></i>Back to app
+        </a>
+      </div>
+      <nav class="flex flex-col gap-1.5 px-3">
+        <a href="#" data-nav-item="account" data-press="tab:account" class="group flex h-9 items-center gap-3 rounded-2xl px-2 text-sm font-normal text-foreground transition-colors hover:bg-surface-tertiary aria-[current=page]:bg-surface-tertiary aria-[current=page]:font-medium">
+          <i data-icon="person" class="size-5 text-muted group-aria-[current=page]:text-foreground"></i>Account
+        </a>
+        <a href="#" data-nav-item="preferences" data-press="tab:preferences" class="group flex h-9 items-center gap-3 rounded-2xl px-2 text-sm font-normal text-foreground transition-colors hover:bg-surface-tertiary aria-[current=page]:bg-surface-tertiary aria-[current=page]:font-medium">
+          <i data-icon="sliders" class="size-5 text-muted group-aria-[current=page]:text-foreground"></i>Preferences
+        </a>
+        <a href="#" data-nav-item="plan-management" data-press="tab:plan-management" class="group flex h-9 items-center gap-3 rounded-2xl px-2 text-sm font-normal text-foreground transition-colors hover:bg-surface-tertiary aria-[current=page]:bg-surface-tertiary aria-[current=page]:font-medium">
+          <i data-icon="seal-check" class="size-5 text-muted group-aria-[current=page]:text-foreground"></i>Plan management
+        </a>
+        <a href="#" data-nav-item="portfolio" data-press="tab:portfolio" class="group flex h-9 items-center gap-3 rounded-2xl px-2 text-sm font-normal text-foreground transition-colors hover:bg-surface-tertiary aria-[current=page]:bg-surface-tertiary aria-[current=page]:font-medium">
+          <i data-icon="briefcase" class="size-5 text-muted group-aria-[current=page]:text-foreground"></i>Portfolio
+        </a>
+        <button type="button" class="flex h-9 items-center gap-3 rounded-2xl px-2 text-start text-sm font-normal text-foreground transition-colors hover:bg-surface-tertiary">
+          <i data-icon="circle-question" class="size-5 text-muted"></i>Support center
+        </button>
+        <a href="#" data-nav-item="legal-privacy" data-press="tab:legal-privacy" class="group flex h-9 items-center gap-3 rounded-2xl px-2 text-sm font-normal text-foreground transition-colors hover:bg-surface-tertiary aria-[current=page]:bg-surface-tertiary aria-[current=page]:font-medium">
+          <i data-icon="shield-keyhole" class="size-5 text-muted group-aria-[current=page]:text-foreground"></i>Legal &amp; Privacy
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Header: back + section title on mobile, breadcrumbs on desktop. -->
+    <header class="flex h-16 items-center px-4 desktop:ms-60 desktop:h-15 desktop:border-b desktop:border-border desktop:px-5">
+      <button type="button" class="flex h-6 min-w-0 items-center gap-3 text-foreground desktop:hidden">
+        <i data-icon="chevron-left" class="size-5 shrink-0 text-muted"></i>
+        <span data-title-slot class="truncate text-base font-normal">Account</span>
+      </button>
+      <div class="hidden items-center gap-2 text-sm desktop:flex">
+        <ol aria-label="Breadcrumb" data-hero="Breadcrumbs" class="min-w-0">
+          <li data-slot="item" class="font-medium"><a href="#" data-slot="link">Settings</a><i data-icon="chevron-right" data-slot="separator"></i></li>
+          <li data-slot="item" class="font-medium"><span data-slot="link" data-current="true" data-title-slot>Account</span></li>
+        </ol>
+      </div>
+    </header>
+
+    <div class="px-4 pb-6 desktop:ms-60 desktop:px-6 desktop:pt-5 desktop:pb-6">
+      <main data-outlet class="mx-auto w-full max-w-160 min-w-0"></main>
+    </div>
+  </div>
+</template>
+
+<template data-layout="registration">
+  <div class="flex min-h-(--je-frame-h) flex-col items-stretch bg-background text-foreground">
+
+    <!-- Stepper. Each step has data-status="complete" | "active" | "inactive"; the line after
+         an active or complete step is filled. -->
+    <div class="w-full">
+      <div class="mx-auto h-[110px] w-full max-w-125 px-3 pt-4 pb-8 desktop:h-[102px] desktop:py-5">
+        <ol data-stepper aria-label="Registration steps" class="flex items-start">
+          <li data-status="active" class="group relative flex flex-1 flex-col items-center">
+            <div class="relative z-10 flex flex-col items-center gap-1.5">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-border text-sm font-semibold text-muted group-data-[status=active]:border-accent group-data-[status=active]:text-accent group-data-[status=complete]:border-accent group-data-[status=complete]:bg-accent group-data-[status=complete]:text-accent-foreground">
+                <span class="group-data-[status=complete]:hidden">1</span><i data-icon="check" class="hidden size-4 group-data-[status=complete]:inline-flex"></i>
+              </span>
+              <span class="text-center text-sm leading-5 font-medium text-muted group-data-[status=active]:text-foreground group-data-[status=complete]:text-foreground">Create account</span>
+            </div>
+            <span class="absolute top-4.25 right-[calc(-50%+18px)] left-[calc(50%+18px)] h-0.5 overflow-hidden bg-separator"><span class="absolute inset-0 origin-left scale-x-0 bg-accent transition-transform group-data-[status=active]:scale-x-100 group-data-[status=complete]:scale-x-100"></span></span>
+          </li>
+          <li data-status="inactive" class="group relative flex flex-1 flex-col items-center">
+            <div class="relative z-10 flex flex-col items-center gap-1.5">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-border text-sm font-semibold text-muted group-data-[status=active]:border-accent group-data-[status=active]:text-accent group-data-[status=complete]:border-accent group-data-[status=complete]:bg-accent group-data-[status=complete]:text-accent-foreground">
+                <span class="group-data-[status=complete]:hidden">2</span><i data-icon="check" class="hidden size-4 group-data-[status=complete]:inline-flex"></i>
+              </span>
+              <span class="text-center text-sm leading-5 font-medium text-muted group-data-[status=active]:text-foreground group-data-[status=complete]:text-foreground">Add offer</span>
+            </div>
+            <span class="absolute top-4.25 right-[calc(-50%+18px)] left-[calc(50%+18px)] h-0.5 overflow-hidden bg-separator"><span class="absolute inset-0 origin-left scale-x-0 bg-accent transition-transform group-data-[status=active]:scale-x-100 group-data-[status=complete]:scale-x-100"></span></span>
+          </li>
+          <li data-status="inactive" class="group relative flex flex-1 flex-col items-center">
+            <div class="relative z-10 flex flex-col items-center gap-1.5">
+              <span class="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-border text-sm font-semibold text-muted group-data-[status=active]:border-accent group-data-[status=active]:text-accent group-data-[status=complete]:border-accent group-data-[status=complete]:bg-accent group-data-[status=complete]:text-accent-foreground">
+                <span class="group-data-[status=complete]:hidden">3</span><i data-icon="check" class="hidden size-4 group-data-[status=complete]:inline-flex"></i>
+              </span>
+              <span class="text-center text-sm leading-5 font-medium text-muted group-data-[status=active]:text-foreground group-data-[status=complete]:text-foreground">Get app</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <main data-outlet class="mt-4 w-full px-4 desktop:mt-28"></main>
+  </div>
+</template>
+
+<!-- ═══ SCREENS ═══════════════════════════════════════════════════════════════
+     One <section data-screen> per Screen; its content is the page inside the
+     Layout. data-states lists the Screen's States; data-when / data-unless on
+     any element show or hide it per State. -->
+<section data-screen="example" data-layout="app" data-nav="personal-plan" data-title="Personal Plan" data-states="default loading">
+  <div class="mx-auto flex w-full max-w-160 flex-col gap-4">
+    <div data-hero="Card" data-unless="loading">
+      <div data-slot="header">
+        <h2 data-slot="title">Card title</h2>
+        <p data-slot="description">Body copy, muted.</p>
+      </div>
+      <div data-slot="footer">
+        <button data-hero="Button" data-variant="primary" data-press="action:submit">
+          <span data-slot="label">Continue</span>
+        </button>
+      </div>
+    </div>
+    <div data-hero="Skeleton" class="h-36 rounded-3xl" data-when="loading"></div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+ "Calendar": {
+  "partFixes": {
+   "YearPickerGridBody": null
+  }
+ },
+ "RangeCalendar": {
+  "partFixes": {
+   "YearPickerGridBody": null
+  }
+ },
+ "CalendarYearPicker": {
+  "partFixes": {
+   "GridBody": null
+  }
+ },
+ "Toast": {
+  "notesReplace": [
+   {
+    "from": "Enter/exit slide uses document.startViewTransition (view-transition-class toast-bottom/toast-top): not reproducible statically.",
+    "to": "Enter/exit animation is driven by document.startViewTransition (React sets only an inline view-transition-name: toast-<key> per toast); the CSS rules keyed on view-transition-class names toast-top / toast-bottom are never matched because React sets no view-transition-class: not reproducible statically."
+   }
+  ]
+ }
+}

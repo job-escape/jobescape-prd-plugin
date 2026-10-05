@@ -1,0 +1,38 @@
+/* ── PREVIEW CHROME (shared by Web and iOS; never translated to code) ───────── */
+html { background: #e7e7ea; }
+html[data-theme="dark"] { background: #1c1c1f; }
+body { margin: 0; font-family: -apple-system, system-ui, sans-serif; }
+section[data-screen], template[data-layout] { display: none; }
+.je-toolbar { position: sticky; top: 0; z-index: 1000; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 16px; background: #18181b; color: #fff; font: 500 12px/16px -apple-system, system-ui, sans-serif; }
+.je-toolbar b { margin-right: 6px; font-weight: 600; }
+.je-toolbar b span { margin-left: 4px; font-weight: 400; opacity: 0.6; }
+.je-toolbar .je-group { display: flex; align-items: center; gap: 2px; padding: 2px; border-radius: 15px; background: rgba(255, 255, 255, 0.08); }
+.je-toolbar .je-group[hidden] { display: none; }
+.je-toolbar button { height: 26px; padding: 0 10px; border: 0; border-radius: 13px; background: transparent; color: #fff; font: inherit; cursor: pointer; }
+.je-toolbar button[aria-pressed="true"] { background: #fff; color: #18181b; }
+.je-toolbar > button[data-act] { background: rgba(255, 255, 255, 0.12); }
+.je-toolbar label { display: flex; align-items: center; gap: 6px; padding: 0 6px; }
+.je-toolbar select { height: 24px; max-width: 200px; border: 0; border-radius: 12px; padding: 0 8px; background: #fff; color: #18181b; font: inherit; }
+.je-toolbar .je-lint { margin-left: auto; font-weight: 600; }
+.je-toolbar .je-lint[data-count="0"] { background: #17c964; color: #04310f; }
+.je-toolbar .je-lint:not([data-count="0"]) { background: #f5a524; color: #3a2400; }
+.je-lintlist { display: none; position: fixed; top: 52px; right: 16px; z-index: 1001; box-sizing: border-box; width: min(560px, calc(100vw - 32px)); max-height: 70vh; overflow: auto; padding: 12px 14px; border-radius: 12px; background: #fff; color: #18181b; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18); font: 13px/18px -apple-system, system-ui, sans-serif; }
+.je-lintlist.on { display: block; }
+.je-lintlist div { padding: 6px 0; border-bottom: 1px solid #ececef; }
+.je-lintlist div:last-child { border: 0; }
+.je-lintlist small { display: block; color: #71717a; }
+.je-gallery { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 32px 28px; padding: 28px 24px 72px; }
+.je-item { margin: 0; }
+.je-item > figcaption { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 4px 8px 8px; color: #52525b; font: 12px/16px -apple-system, system-ui, sans-serif; }
+html[data-theme="dark"] .je-item > figcaption { color: #a1a1aa; }
+.je-item > figcaption b { font-weight: 600; }
+.je-item > figcaption i { font-style: normal; opacity: 0.8; }
+.je-open { flex-shrink: 0; height: 24px; padding: 0 10px; border: 0; border-radius: 12px; background: #18181b; color: #fff; font: 500 12px/16px -apple-system, system-ui, sans-serif; cursor: pointer; }
+html[data-theme="dark"] .je-open { background: #fff; color: #18181b; }
+.je-flow { display: flex; justify-content: center; padding: 24px; }
+.je-empty, .je-missing { margin: 48px auto; color: #52525b; font: 14px/20px -apple-system, system-ui, sans-serif; text-align: center; }
+html[data-theme="dark"] :is(.je-empty, .je-missing) { color: #a1a1aa; }
+.je-missing { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.je-toast { position: fixed; bottom: 24px; left: 50%; z-index: 1002; max-width: min(480px, calc(100vw - 32px)); padding: 10px 16px; border-radius: 12px; background: #18181b; color: #fff; font: 500 13px/18px -apple-system, system-ui, sans-serif; opacity: 0; transform: translate(-50%, 8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
+.je-toast.on { opacity: 1; transform: translate(-50%, 0); }
+.je-flow [data-press] { cursor: pointer; }

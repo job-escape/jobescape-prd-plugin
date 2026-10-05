@@ -1,0 +1,578 @@
+/* ── 1. THEME ─────────────────────────────────────────────────────────────────
+   The same CSS the app compiles (HeroUI Native + app overrides), so a class
+   means in this file exactly what it means on the phone. */
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* Only app tokens exist. The default Tailwind palette is removed on purpose:
+     bg-blue-500 and friends render nothing here, so they never reach the app. */
+  --color-*: initial;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-transparent: transparent;
+  /* The app loads no custom font: iOS renders San Francisco. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+}
+
+/* THEME:BEGIN */
+/* heroui-native 1.0.5 — styles/variables.css */
+
+@theme {
+  /* Primitive Colors (Do not change between light and dark) */
+  --white: oklch(100% 0 0);
+  --black: oklch(0% 0 0);
+  --snow: oklch(0.9911 0 0);
+  --eclipse: oklch(0.2103 0.0059 285.89);
+
+  /* Border */
+  --border-width: 1px;
+  --field-border-width: 0px;
+
+  /* Base radius */
+  --radius: 0.5rem;
+  --field-radius: calc(var(--radius) * 1.75);
+
+  /* Opacity */
+  --opacity-disabled: 0.5;
+}
+
+@layer theme {
+  :root {
+    @variant light {
+      /* Base Colors */
+      --background: oklch(0.9702 0 0);
+      --foreground: var(--eclipse);
+
+      /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
+      --surface: var(--white);
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: oklch(0.9524 0.0013 286.37);
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: oklch(0.9373 0.0013 286.37);
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay: Used for floating/overlay components (dialogs, popovers, modals, menus) */
+      --overlay: var(--white);
+      --overlay-foreground: var(--foreground);
+      --backdrop: oklch(0% 0 0 / 20%);
+
+      --muted: oklch(0.5517 0.0138 285.94);
+
+      --default: oklch(94% 0.001 286.375);
+      --default-foreground: var(--eclipse);
+
+      --accent: oklch(0.6204 0.195 253.83);
+      --accent-foreground: var(--snow);
+
+      /* Form Fields */
+      --field-background: var(--white);
+      --field-foreground: oklch(0.2103 0.0059 285.89);
+      --field-placeholder: var(--muted);
+      --field-border: transparent; /* no border by default on form fields */
+
+      /* Status Colors */
+      --success: oklch(0.7329 0.1935 150.81);
+      --success-foreground: var(--eclipse);
+
+      --warning: oklch(0.7819 0.1585 72.33);
+      --warning-foreground: var(--eclipse);
+
+      --danger: oklch(0.6532 0.2328 25.74);
+      --danger-foreground: var(--snow);
+
+      /* Component Colors */
+      --segment: var(--white);
+      --segment-foreground: var(--eclipse);
+
+      /* Misc Colors */
+      --border: oklch(90% 0.004 286.32);
+      --separator: oklch(74% 0.004 286.32);
+      --focus: var(--accent);
+      --link: var(--foreground);
+
+      /* Shadows */
+      --surface-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+      --overlay-shadow:
+        0 2px 8px 0 rgba(0, 0, 0, 0.02), 0 -6px 12px 0 rgba(0, 0, 0, 0.01),
+        0 14px 28px 0 rgba(0, 0, 0, 0.03);
+      --field-shadow:
+        0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.06),
+        0 0 1px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    @variant dark {
+      /* Base Colors */
+      --background: oklch(12% 0.005 285.823);
+      --foreground: var(--snow);
+
+      /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
+      --surface: oklch(0.2103 0.0059 285.89);
+      --surface-foreground: var(--foreground);
+
+      --surface-secondary: oklch(0.257 0.0037 286.14);
+      --surface-secondary-foreground: var(--foreground);
+
+      --surface-tertiary: oklch(0.2721 0.0024 247.91);
+      --surface-tertiary-foreground: var(--foreground);
+
+      /* Overlay: Used for floating/overlay components (dialogs, popovers, modals, menus) - lighter for contrast */
+      --overlay: oklch(0.2103 0.0059 285.89);
+      --overlay-foreground: var(--foreground);
+      --backdrop: oklch(0% 0 0 / 20%);
+
+      --muted: oklch(70.5% 0.015 286.067);
+
+      --default: oklch(27.4% 0.006 286.033);
+      --default-foreground: var(--snow);
+
+      --accent: oklch(0.6204 0.195 253.83);
+      --accent-foreground: var(--snow);
+
+      /* Form Field Defaults - Colors (only the ones that are different from light theme) */
+      --field-background: oklch(0.2103 0.0059 285.89);
+      --field-foreground: var(--foreground);
+      --field-placeholder: var(--muted);
+      --field-border: transparent; /* no border by default on form fields */
+
+      /* Status Colors */
+      --success: oklch(0.7329 0.1935 150.81);
+      --success-foreground: var(--eclipse);
+
+      --warning: oklch(0.8203 0.1388 76.34);
+      --warning-foreground: var(--eclipse);
+
+      --danger: oklch(0.594 0.1967 24.63);
+      --danger-foreground: var(--snow);
+
+      /* Component Colors */
+      --segment: oklch(0.3964 0.01 285.93);
+      --segment-foreground: var(--foreground);
+
+      /* Misc Colors */
+      --border: oklch(28% 0.006 286.033);
+      --separator: oklch(40% 0.006 286.033);
+      --focus: var(--accent);
+      --link: var(--foreground);
+
+      /* Shadows */
+      --surface-shadow: 0 0 0 0 transparent inset; /* No shadow on dark mode */
+      --overlay-shadow: 0 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+      --field-shadow: 0 0 0 0 transparent inset; /* Transparent shadow to allow ring utilities to work */
+    }
+  }
+}
+
+/* heroui-native 1.0.5 — styles/theme.css */
+
+@theme inline static {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-surface-hover: color-mix(in oklab, var(--surface) 92%, var(--surface-foreground) 8%);
+
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-secondary-foreground: var(--surface-secondary-foreground);
+
+  --color-surface-tertiary: var(--surface-tertiary);
+  --color-surface-tertiary-foreground: var(--surface-tertiary-foreground);
+
+  --color-overlay: var(--overlay);
+  --color-overlay-foreground: var(--overlay-foreground);
+  --color-backdrop: var(--backdrop);
+
+  --color-muted: var(--muted);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-segment: var(--segment);
+  --color-segment-foreground: var(--segment-foreground);
+
+  --color-border: var(--border);
+  --color-separator: var(--separator);
+  --color-focus: var(--focus);
+  --color-link: var(--link);
+
+  --color-default: var(--default);
+  --color-default-foreground: var(--default-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+
+  /* Form Field Tokens */
+  --color-field: var(--field-background, var(--default));
+  --color-field-foreground: var(--field-foreground, var(--foreground));
+  --color-field-placeholder: var(--field-placeholder, var(--muted));
+  --color-field-border: var(--field-border, var(--border));
+  --radius-field: var(--field-radius, var(--radius-xl));
+  --border-width-field-width: var(--field-border-width, var(--border-width));
+
+  --shadow-surface: var(--surface-shadow);
+  --shadow-overlay: var(--overlay-shadow);
+  --shadow-field: var(--field-shadow);
+
+  /* Calculated Variables */
+
+  /* Colors */
+
+  /* --- background shades --- */
+  --color-background-secondary: color-mix(in oklab, var(--background) 96%, var(--foreground) 4%);
+  --color-background-tertiary: color-mix(in oklab, var(--background) 92%, var(--foreground) 8%);
+  --color-background-inverse: var(--foreground);
+
+  /* ------------------------- */
+  --color-default-hover: color-mix(in oklab, var(--default) 96%, var(--default-foreground) 4%);
+  --color-accent-hover: color-mix(in oklab, var(--accent) 90%, var(--accent-foreground) 10%);
+  --color-success-hover: color-mix(in oklab, var(--success) 90%, var(--success-foreground) 10%);
+  --color-warning-hover: color-mix(in oklab, var(--warning) 90%, var(--warning-foreground) 10%);
+  --color-danger-hover: color-mix(in oklab, var(--danger) 90%, var(--danger-foreground) 10%);
+
+  /* Form Field Colors */
+  --color-field-hover: color-mix(in oklab, var(--field-background, var(--default)) 90%, var(--field-foreground, var(--foreground)) 2%);
+  --color-field-focus: var(--field-background, var(--default));
+  --color-field-border-hover: color-mix(in oklab, var(--field-border, var(--border)) 88%, var(--field-foreground, var(--foreground)) 10%);
+  --color-field-border-focus: color-mix(in oklab, var(--field-border, var(--border)) 74%, var(--field-foreground, var(--foreground)) 22%);
+
+  /* Soft Colors */
+  --color-default-soft: color-mix(in oklab, var(--default) 50%, transparent);
+  --color-default-soft-foreground: var(--default-foreground);
+  --color-default-soft-hover: color-mix(in oklab, var(--default) 60%, transparent);
+
+  --color-accent-soft: color-mix(in oklab, var(--accent) 15%, transparent);
+  --color-accent-soft-foreground: color-mix(in oklab, var(--accent) 80%, var(--foreground) 20%);
+  --color-accent-soft-hover: color-mix(in oklab, var(--accent) 20%, transparent);
+
+  --color-danger-soft: color-mix(in oklab, var(--danger) 15%, transparent);
+  --color-danger-soft-foreground: color-mix(in oklab, var(--danger) 80%, var(--foreground) 20%);
+  --color-danger-soft-hover: color-mix(in oklab, var(--danger) 20%, transparent);
+
+  --color-warning-soft: color-mix(in oklab, var(--warning) 15%, transparent);
+  --color-warning-soft-foreground: color-mix(in oklab, var(--warning) 65%, var(--foreground) 35%);
+  --color-warning-soft-hover: color-mix(in oklab, var(--warning) 20%, transparent);
+
+  --color-success-soft: color-mix(in oklab, var(--success) 15%, transparent);
+  --color-success-soft-foreground: color-mix(in oklab, var(--success) 70%, var(--foreground) 30%);
+  --color-success-soft-hover: color-mix(in oklab, var(--success) 20%, transparent);
+
+  /* Separator Colors - Levels */
+  --color-separator-secondary: color-mix(in oklab, var(--surface) 85%, var(--surface-foreground) 15%);
+  --color-separator-tertiary: color-mix(in oklab, var(--surface) 81%, var(--surface-foreground) 19%);
+
+  /* Border Colors - Levels (progressive contrast: default → secondary → tertiary) */
+  /* Light mode: lighter → darker | Dark mode: darker → lighter */
+  --color-border-secondary: color-mix(in oklab, var(--surface) 78%, var(--surface-foreground) 22%);
+  --color-border-tertiary: color-mix(in oklab, var(--surface) 66%, var(--surface-foreground) 34%);
+
+  /* Radius and default sizes - defaults can change by just changing the --radius */
+  --radius-xs: calc(var(--radius) * 0.25); /* 0.125rem (2px) */
+  --radius-sm: calc(var(--radius) * 0.5); /* 0.25rem (4px) */
+  --radius-md: calc(var(--radius) * 0.75); /* 0.375rem (6px) */
+  --radius-lg: calc(var(--radius) * 1); /* 0.5rem (8px) */
+  --radius-xl: calc(var(--radius) * 1.5); /* 0.75rem (12px) */
+  --radius-2xl: calc(var(--radius) * 2); /* 1rem (16px) */
+  --radius-3xl: calc(var(--radius) * 3); /* 1.5rem (24px) */
+  --radius-4xl: calc(var(--radius) * 4); /* 2rem (32px) */
+}
+
+/* heroui-native-pro 1.0.0-beta.6 — styles/theme.css */
+
+@theme inline static {
+  --color-chart-1: color-mix(in oklab, var(--accent) 60%, black);
+  --color-chart-2: color-mix(in oklab, var(--accent) 80%, black);
+  --color-chart-3: var(--accent);
+  --color-chart-4: color-mix(in oklab, var(--accent) 80%, white);
+  --color-chart-5: color-mix(in oklab, var(--accent) 60%, white);
+}
+
+/* app — global.css overrides */
+
+@theme inline static {
+  --color-accent-soft-foreground: var(--accent);
+  --color-success-soft-foreground: var(--success);
+  --color-warning-soft-foreground: var(--warning);
+  --color-danger-soft-foreground: var(--danger);
+}
+
+@theme {
+  --radius: 1rem;
+}
+/* THEME:END */
+
+/* ── 2. UTILITIES the app has and the browser does not ─────────────────────── */
+@utility pt-safe { padding-top: var(--safe-top); }
+@utility pb-safe { padding-bottom: var(--safe-bottom); }
+@utility pt-safe-offset-* { padding-top: calc(var(--safe-top) + var(--spacing) * --value(number)); }
+@utility pb-safe-offset-* { padding-bottom: calc(var(--safe-bottom) + var(--spacing) * --value(number)); }
+@utility h-hairline { height: 0.5px; }
+@utility w-hairline { width: 0.5px; }
+@utility border-hairline { border-width: 0.5px; }
+
+/* ── 3. REACT NATIVE LAYOUT ───────────────────────────────────────────────────
+   Every box behaves like an RN <View>: a flex column that does not shrink.
+   Rows need `flex-row`, text in a row needs `flex-1`/`shrink` to wrap — the
+   same as in the app, so the markup transfers class for class. */
+@layer base {
+  :where(.rn),
+  :where(.rn) :where(div, section, header, main, footer, nav, article, aside, figure, ul, ol, li, button, a, label) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-content: flex-start;
+    flex-shrink: 0;
+    position: relative;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+    background: none;
+    text-align: start;
+    text-decoration: none;
+    list-style: none;
+  }
+  /* Text that is not inside a text element is a bug in RN. It shows up magenta. */
+  .rn {
+    color: #ff00d4;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  :where(.rn) :where(p, h1, h2, h3, h4, h5, h6, span) {
+    display: block;
+    flex-shrink: 0;
+    position: relative;
+    min-width: 0;
+    margin: 0;
+  }
+  :where(.rn) :where(p, h1, h2, h3, h4, h5, h6, span) :where(span) {
+    display: inline;
+  }
+  /* Like every RN view, images and icons stack in source order. */
+  :where(.rn) :where(img, i, hr) {
+    position: relative;
+  }
+  :where(.rn) :where(img) {
+    display: block;
+    flex-shrink: 0;
+    max-width: none;
+    object-fit: cover;
+  }
+  :where(.rn) :where(button) {
+    appearance: none;
+    cursor: pointer;
+    font: inherit;
+  }
+  :where(.rn) :where(hr) {
+    display: block;
+    flex-shrink: 0;
+    border: 0;
+    margin: 0;
+  }
+  :where(.rn) :where([data-press]) {
+    cursor: pointer;
+  }
+}
+
+/* ── 4. COMPONENTS ────────────────────────────────────────────────────────────
+   The class strings below are HeroUI Native's own (lib/module/components/
+   <name>/<name>.styles.js). `class` on the element overrides them, as
+   `className` does in the app. */
+@layer components {
+  /* Typography — every <p>, <h1-6> and top-level <span> that is not a slot */
+  :where(.rn) :where(p, h1, h2, h3, h4, h5, h6, span):where(:not([data-slot])):where(:not(:where(p, h1, h2, h3, h4, h5, h6, span) *)) {
+    @apply font-normal text-left text-foreground;
+  }
+  :where(.rn) :where(p, h1, h2, h3, h4, h5, h6, span):where(:not([data-slot])):where(:not([data-type])):where(:not(:where(p, h1, h2, h3, h4, h5, h6, span) *)) {
+    @apply text-base leading-7;
+  }
+  :where(.rn) [data-type="body"] { @apply text-base leading-7; }
+  :where(.rn) [data-type="body-sm"] { @apply text-sm leading-6; }
+  :where(.rn) [data-type="body-xs"] { @apply text-xs leading-5; }
+  :where(.rn) [data-type="h1"] { @apply text-4xl font-semibold tracking-tight; }
+  :where(.rn) [data-type="h2"] { @apply text-3xl font-semibold tracking-tight; }
+  :where(.rn) [data-type="h3"] { @apply text-2xl font-semibold tracking-tight; }
+  :where(.rn) [data-type="h4"] { @apply text-xl font-semibold tracking-tight; }
+  :where(.rn) [data-type="h5"] { @apply text-lg font-semibold tracking-tight; }
+  :where(.rn) [data-type="h6"] { @apply text-base font-semibold tracking-tight; }
+  :where(.rn) [data-weight="normal"] { @apply font-normal; }
+  :where(.rn) [data-weight="medium"] { @apply font-medium; }
+  :where(.rn) [data-weight="semibold"] { @apply font-semibold; }
+  :where(.rn) [data-weight="bold"] { @apply font-bold; }
+  :where(.rn) [data-color="muted"] { @apply text-muted; }
+  :where(.rn) [data-align="center"] { @apply text-center; }
+  :where(.rn) [data-align="end"] { @apply text-right; }
+
+  /* Button — the app wrapper (~/components/heroui/button): size lg and full width by default */
+  [data-hero="Button"] { @apply flex-row items-center justify-center border-0 bg-accent h-14 px-5 gap-2.5 rounded-4xl w-full; }
+  [data-hero="Button"][data-size="md"] { @apply h-12 px-4 gap-2 rounded-3xl; }
+  [data-hero="Button"][data-size="sm"] { @apply h-10 px-3.5 gap-1.5 rounded-3xl; }
+  [data-hero="Button"][data-variant="secondary"],
+  [data-hero="Button"][data-variant="tertiary"] { @apply bg-default; }
+  [data-hero="Button"][data-variant="outline"] { @apply bg-transparent border border-border; }
+  [data-hero="Button"][data-variant="ghost"] { @apply bg-transparent; }
+  [data-hero="Button"][data-variant="danger"] { @apply bg-danger; }
+  [data-hero="Button"][data-variant="danger-soft"] { @apply bg-danger-soft; }
+  [data-hero="Button"][data-disabled] { opacity: var(--opacity-disabled); pointer-events: none; }
+  [data-hero="Button"] > [data-slot="label"] { @apply font-medium text-accent-foreground text-lg; }
+  [data-hero="Button"][data-size="md"] > [data-slot="label"] { @apply text-base; }
+  [data-hero="Button"][data-size="sm"] > [data-slot="label"] { @apply text-sm; }
+  [data-hero="Button"][data-variant="secondary"] > [data-slot="label"] { @apply text-accent-soft-foreground; }
+  [data-hero="Button"][data-variant="tertiary"] > [data-slot="label"],
+  [data-hero="Button"][data-variant="outline"] > [data-slot="label"],
+  [data-hero="Button"][data-variant="ghost"] > [data-slot="label"] { @apply text-default-foreground; }
+  [data-hero="Button"][data-variant="danger"] > [data-slot="label"] { @apply text-danger-foreground; }
+  [data-hero="Button"][data-variant="danger-soft"] > [data-slot="label"] { @apply text-danger-soft-foreground; }
+
+  /* CloseButton — Button tertiary sm, icon only, h-8 */
+  [data-hero="CloseButton"] { @apply flex-row items-center justify-center border-0 bg-default h-8 p-0 aspect-square rounded-3xl; }
+
+  /* Chip */
+  [data-hero="Chip"] { @apply self-start flex-row items-center justify-center gap-1 overflow-hidden px-3 py-1 rounded-2xl bg-accent; }
+  [data-hero="Chip"][data-size="sm"] { @apply px-2 py-0.5 rounded-xl; }
+  [data-hero="Chip"][data-size="lg"] { @apply px-4 py-1.5 rounded-3xl; }
+  [data-hero="Chip"][data-color="default"] { @apply bg-default; }
+  [data-hero="Chip"][data-color="success"] { @apply bg-success; }
+  [data-hero="Chip"][data-color="warning"] { @apply bg-warning; }
+  [data-hero="Chip"][data-color="danger"] { @apply bg-danger; }
+  [data-hero="Chip"][data-variant="soft"] { @apply bg-accent-soft; }
+  [data-hero="Chip"][data-variant="soft"][data-color="default"] { @apply bg-default; }
+  [data-hero="Chip"][data-variant="soft"][data-color="success"] { @apply bg-success-soft; }
+  [data-hero="Chip"][data-variant="soft"][data-color="warning"] { @apply bg-warning-soft; }
+  [data-hero="Chip"][data-variant="soft"][data-color="danger"] { @apply bg-danger-soft; }
+  [data-hero="Chip"][data-variant="secondary"] { @apply bg-default; }
+  [data-hero="Chip"][data-variant="tertiary"] { @apply bg-transparent; }
+  [data-hero="Chip"] > [data-slot="label"] { @apply font-medium text-sm text-accent-foreground; }
+  [data-hero="Chip"][data-size="sm"] > [data-slot="label"] { @apply text-xs; }
+  [data-hero="Chip"][data-size="lg"] > [data-slot="label"] { @apply text-base; }
+  [data-hero="Chip"][data-color="default"] > [data-slot="label"] { @apply text-default-foreground; }
+  [data-hero="Chip"][data-color="success"] > [data-slot="label"] { @apply text-success-foreground; }
+  [data-hero="Chip"][data-color="warning"] > [data-slot="label"] { @apply text-warning-foreground; }
+  [data-hero="Chip"][data-color="danger"] > [data-slot="label"] { @apply text-danger-foreground; }
+  [data-hero="Chip"]:is([data-variant="soft"], [data-variant="secondary"], [data-variant="tertiary"]) > [data-slot="label"] { @apply text-accent-soft-foreground; }
+  [data-hero="Chip"]:is([data-variant="soft"], [data-variant="secondary"], [data-variant="tertiary"])[data-color="default"] > [data-slot="label"] { @apply text-default-soft-foreground; }
+  [data-hero="Chip"]:is([data-variant="soft"], [data-variant="secondary"], [data-variant="tertiary"])[data-color="success"] > [data-slot="label"] { @apply text-success-soft-foreground; }
+  [data-hero="Chip"]:is([data-variant="soft"], [data-variant="secondary"], [data-variant="tertiary"])[data-color="warning"] > [data-slot="label"] { @apply text-warning-soft-foreground; }
+  [data-hero="Chip"]:is([data-variant="soft"], [data-variant="secondary"], [data-variant="tertiary"])[data-color="danger"] > [data-slot="label"] { @apply text-danger-soft-foreground; }
+
+  /* Surface / Card */
+  [data-hero="Surface"], [data-hero="Card"] { @apply p-4 rounded-3xl shadow-surface overflow-hidden bg-surface; }
+  :is([data-hero="Surface"], [data-hero="Card"])[data-variant="secondary"] { @apply bg-surface-secondary; }
+  :is([data-hero="Surface"], [data-hero="Card"])[data-variant="tertiary"] { @apply bg-surface-tertiary; }
+  :is([data-hero="Surface"], [data-hero="Card"])[data-variant="transparent"] { @apply bg-transparent shadow-none; }
+
+  /* ListGroup — a Surface with p-0 and rows */
+  [data-hero="ListGroup"] { @apply p-0 rounded-3xl shadow-surface overflow-hidden bg-surface; }
+  [data-hero="ListGroup"] > [data-slot="item"] { @apply flex-row items-center p-4 gap-3; }
+  [data-hero="ListGroup"] [data-slot="item-content"] { @apply flex-1; }
+  [data-hero="ListGroup"] [data-slot="item-title"] { @apply text-base text-foreground font-medium; }
+  [data-hero="ListGroup"] [data-slot="item-description"] { @apply text-sm text-muted; }
+
+  /* Avatar */
+  [data-hero="Avatar"] { @apply items-center justify-center overflow-hidden rounded-full size-12 bg-default; }
+  [data-hero="Avatar"][data-size="sm"] { @apply size-10; }
+  [data-hero="Avatar"][data-size="lg"] { @apply size-16; }
+  [data-hero="Avatar"][data-variant="soft"] { @apply bg-accent/15; }
+  [data-hero="Avatar"][data-variant="soft"][data-color="default"] { @apply bg-default; }
+  [data-hero="Avatar"][data-variant="soft"][data-color="success"] { @apply bg-success/15; }
+  [data-hero="Avatar"][data-variant="soft"][data-color="warning"] { @apply bg-warning/15; }
+  [data-hero="Avatar"][data-variant="soft"][data-color="danger"] { @apply bg-danger/15; }
+  [data-hero="Avatar"] > img { @apply h-full w-full; }
+  [data-hero="Avatar"] > [data-slot="fallback"] { @apply font-medium text-sm text-accent-soft-foreground; }
+  [data-hero="Avatar"][data-size="sm"] > [data-slot="fallback"] { @apply text-xs; }
+  [data-hero="Avatar"][data-size="lg"] > [data-slot="fallback"] { @apply text-base; }
+  [data-hero="Avatar"][data-color="default"] > [data-slot="fallback"] { @apply text-default-soft-foreground; }
+  [data-hero="Avatar"][data-color="success"] > [data-slot="fallback"] { @apply text-success-soft-foreground; }
+  [data-hero="Avatar"][data-color="warning"] > [data-slot="fallback"] { @apply text-warning-soft-foreground; }
+  [data-hero="Avatar"][data-color="danger"] > [data-slot="fallback"] { @apply text-danger-soft-foreground; }
+
+  /* Separator */
+  [data-hero="Separator"] { @apply bg-separator h-hairline; }
+  [data-hero="Separator"][data-orientation="vertical"] { @apply w-hairline h-full; }
+  [data-hero="Separator"][data-variant="thick"] { @apply h-[6px]; }
+
+  /* Tabs (primary = segmented control). The selected trigger stands in for Tabs.Indicator. */
+  [data-hero="Tabs"] { @apply flex-col gap-2; }
+  [data-hero="Tabs"] > [data-slot="list"] { @apply self-start flex-row items-center gap-1 p-[3px] rounded-3xl bg-default; }
+  [data-hero="Tabs"] [data-slot="trigger"] { @apply flex-row items-center justify-center px-3 py-1.5 gap-1.5; }
+  [data-hero="Tabs"] [data-slot="trigger"][data-selected] { @apply rounded-3xl shadow-sm bg-segment; }
+  [data-hero="Tabs"] [data-slot="trigger"] > [data-slot="label"] { @apply text-base font-medium text-muted; }
+  [data-hero="Tabs"] [data-slot="trigger"][data-selected] > [data-slot="label"] { @apply text-segment-foreground; }
+
+  /* BottomSheet — app recipe: 32px top radius, bg-border handle. preview.js adds the handle zone. */
+  [data-hero="BottomSheet"] { position: absolute; inset: 0; z-index: 40; display: flex; flex-direction: column; justify-content: flex-end; background: var(--backdrop); }
+  [data-hero="BottomSheet"] .pv-sheet { @apply bg-overlay rounded-t-2xl shadow-overlay; display: flex; flex-direction: column; max-height: calc(100% - var(--safe-top) - 24px); }
+  [data-hero="BottomSheet"] .pv-handle { height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  [data-hero="BottomSheet"] .pv-handle::before { content: ""; @apply bg-border h-1 w-9 rounded-xs; }
+  [data-hero="BottomSheet"] [data-slot="content"] { @apply p-5 pb-safe-offset-3; }
+
+  /* Toast */
+  [data-hero="Toast"] { @apply bg-surface rounded-3xl p-4 shadow-overlay overflow-hidden; position: absolute; left: 12px; right: 12px; top: calc(var(--safe-top) + 8px); z-index: 50; }
+  [data-hero="Toast"] [data-slot="label"] { @apply text-base font-medium text-foreground; }
+  [data-hero="Toast"] [data-slot="description"] { @apply text-sm text-muted; }
+
+  /* Skeleton, Spinner */
+  [data-hero="Skeleton"] { @apply bg-muted/30 overflow-hidden; }
+  [data-hero="Spinner"] { @apply size-6; border-radius: 9999px; border: 2px solid color-mix(in oklab, currentColor 25%, transparent); border-top-color: currentColor; }
+  [data-hero="Spinner"][data-size="sm"] { @apply size-4; }
+  [data-hero="Spinner"][data-size="lg"] { @apply size-8; }
+
+  /* Icons — @gravity-ui/icons by name; colour comes from a text-* token on the <i> */
+  :where(.rn) i[data-icon] {
+    display: block;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+
+  /* ScrollView. Classes on the element are its contentContainer classes. */
+  :where(.rn) [data-scroll] { flex: 1 1 0%; overflow-x: hidden; overflow-y: auto; scrollbar-width: none; }
+  :where(.rn) [data-scroll="x"] { flex: 0 0 auto; flex-direction: row; overflow-x: auto; overflow-y: hidden; }
+
+  /* PressableFeedback clips its children (base class overflow-hidden) */
+  :where(.rn) [data-press]:where(:not([data-hero])) { overflow: hidden; }
+
+  /* ── Decor, gradients, motion: closed vocabularies. Each name is one shared
+     component in the app; a new look means adding it to the kit and to the app. */
+  [data-decor] { position: absolute; pointer-events: none; }
+  [data-decor="grid"] {
+    inset: 0;
+    --decor-line: color-mix(in oklab, var(--foreground) 4%, transparent);
+    background-image: linear-gradient(var(--decor-line) 1px, transparent 1px), linear-gradient(90deg, var(--decor-line) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  [data-decor="grid"][data-tone="on-accent"] { --decor-line: color-mix(in oklab, var(--accent-foreground) 7%, transparent); }
+  [data-decor="glow"] {
+    border-radius: 9999px;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--accent) 22%, transparent), color-mix(in oklab, var(--accent) 7%, transparent) 55%, transparent);
+  }
+  [data-decor="glow"][data-tint] { background: radial-gradient(closest-side, color-mix(in oklab, var(--pv-glow) 22%, transparent), color-mix(in oklab, var(--pv-glow) 7%, transparent) 55%, transparent); }
+  [data-decor="glow"][data-tone="on-accent"] { background: radial-gradient(closest-side, color-mix(in oklab, var(--accent-foreground) 30%, transparent), transparent); }
+  [data-decor="glow"][data-tone="shade"] { background: radial-gradient(closest-side, rgb(0 0 0 / 0.25), transparent); }
+  [data-decor="glow"][data-tone="surface"] { background: radial-gradient(closest-side, var(--surface), transparent); }
+
+  [data-gradient="accent"] { background-image: linear-gradient(160deg, #2a9bff 0%, #0485f7 45%, #0466d9 100%); }
+
+  [data-motion] { animation: 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(var(--pv-delay, 0) * 1ms); }
+  [data-motion="fade"] { animation-name: pv-fade; }
+  [data-motion="rise"] { animation-name: pv-rise; }
+  [data-motion="pop"] { animation-name: pv-pop; animation-duration: 0.5s; animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes pv-fade { from { opacity: 0; } }
+  @keyframes pv-rise { from { opacity: 0; transform: translateY(18px); } }
+  @keyframes pv-pop { from { opacity: 0; transform: scale(0.6); } }
+}
